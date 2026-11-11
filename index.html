@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prüfungsbegleiter</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F3F5F7; --surface:#FFFFFF; --ink:#1B2230; --slate:#5A6577; --rule:#D8DEE6; --soft:#E9EDF2;
+  --accent:#0F6F74; --accent-ink:#FFFFFF; --accent-soft:#DCEEEE; --warn:#9A5B00; --warn-soft:#FFF1D9; --bad:#A33A2E;
+  --g1:#1F7A5C; --g2:#5E9B3D; --g3:#B39A1F; --g4:#D3832A; --g5:#C4532F; --g6:#8B2A3A;
+  --radius-s:6px; --radius-m:10px;
+  --font:"Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --display:"Bricolage Grotesque", "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#12161D; --surface:#1A2029; --ink:#E6EAF0; --slate:#9AA5B5; --rule:#2E3744; --soft:#232B36;
+    --accent:#4FB3B8; --accent-ink:#0B1A1B; --accent-soft:#17393B; --warn:#F0B35A; --warn-soft:#3A2C14; --bad:#F08A7C;
+    --g1:#3FAE87; --g2:#86C05F; --g3:#D9C04A; --g4:#EB9F4C; --g5:#E2765A; --g6:#C9566A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#12161D; --surface:#1A2029; --ink:#E6EAF0; --slate:#9AA5B5; --rule:#2E3744; --soft:#232B36;
+  --accent:#4FB3B8; --accent-ink:#0B1A1B; --accent-soft:#17393B; --warn:#F0B35A; --warn-soft:#3A2C14; --bad:#F08A7C;
+  --g1:#3FAE87; --g2:#86C05F; --g3:#D9C04A; --g4:#EB9F4C; --g5:#E2765A; --g6:#C9566A;
+  color-scheme: dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.5;padding-bottom:92px}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--display);line-height:1.2;margin:0}
+h2{font-size:1.35rem;font-weight:700}
+h3{font-size:1.05rem;font-weight:700}
+p{margin:.4em 0}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.top{background:var(--surface);border-bottom:1px solid var(--rule);position:sticky;top:0;z-index:20}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+.top-inner{max-width:1240px;margin:0 auto;padding:12px 20px 0;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.brand{font-family:var(--display);font-weight:700;font-size:1.2rem;letter-spacing:-.01em}
+.brand small{display:block;font-family:var(--font);font-weight:400;font-size:.8rem;color:var(--slate);letter-spacing:0}
+.cur{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.cur select{max-width:280px}
+.tabs{max-width:1240px;margin:0 auto;padding:6px 14px 0;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:10px 12px;cursor:pointer;color:var(--slate);white-space:nowrap;font-weight:700}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+
+main{max-width:1240px;margin:0 auto;padding:22px 20px}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:22px;align-items:start}
+.grid-half{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:960px){.grid2,.grid-half{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:var(--radius-m);padding:18px}
+.panel + .panel{margin-top:18px}
+.panel h2 + p,.panel h3 + p{color:var(--slate);font-size:.93rem}
+.sticky{position:sticky;top:160px}
+@media (max-width:960px){.sticky{position:static}}
+.muted{color:var(--slate)}
+.small{font-size:.88rem}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.spacer{flex:1}
+.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px 14px;margin-top:10px}
+label.f{display:flex;flex-direction:column;gap:3px;font-size:.85rem;color:var(--slate)}
+input[type=text],input[type=date],input[type=number],select,textarea{background:var(--paper);border:1px solid var(--rule);border-radius:var(--radius-s);padding:8px 10px;color:var(--ink);width:100%}
+textarea{min-height:90px;resize:vertical;line-height:1.45}
+.btn{background:var(--surface);border:1px solid var(--rule);border-radius:var(--radius-s);padding:8px 13px;cursor:pointer;font-weight:700}
+.btn:hover{border-color:var(--slate)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.ghost{border-color:transparent;background:none;color:var(--slate)}
+.btn.danger{color:var(--bad)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.btn.sm{padding:5px 9px;font-size:.85rem}
+
+/* phases */
+.phases{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+.phase{border:1px solid var(--rule);background:var(--paper);border-radius:999px;padding:6px 12px;cursor:pointer;font-weight:700;font-size:.9rem;color:var(--slate)}
+.phase[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.timer{font-family:var(--display);font-size:2.4rem;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1}
+.timer-target{font-size:.85rem;color:var(--slate)}
+.timer.over{color:var(--warn)}
+
+/* note entry */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.chip{border:1px solid var(--rule);background:var(--surface);border-radius:999px;padding:4px 10px;font-size:.85rem;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--ink);font-weight:700}
+.val{display:inline-flex;border:1px solid var(--rule);border-radius:var(--radius-s);overflow:hidden}
+.val button{border:0;background:var(--surface);padding:7px 12px;cursor:pointer;font-weight:700;min-width:40px}
+.val button[aria-pressed="true"][data-v="+"]{background:var(--g1);color:#fff}
+.val button[aria-pressed="true"][data-v="o"]{background:var(--slate);color:#fff}
+.val button[aria-pressed="true"][data-v="-"]{background:var(--g5);color:#fff}
+.log{list-style:none;padding:0;margin:12px 0 0;max-height:440px;overflow:auto;border-top:1px solid var(--rule)}
+.log li{display:grid;grid-template-columns:52px 22px 1fr auto;gap:8px;padding:8px 2px;border-bottom:1px solid var(--rule);align-items:start;font-size:.95rem}
+.log time{color:var(--slate);font-variant-numeric:tabular-nums;font-size:.85rem;padding-top:2px}
+.log .v{font-weight:700;text-align:center}
+.log .v.p{color:var(--g1)} .log .v.m{color:var(--g5)} .log .v.o{color:var(--slate)}
+.log .meta{display:block;font-size:.78rem;color:var(--slate)}
+.log button{background:none;border:0;color:var(--slate);cursor:pointer;padding:0 4px}
+
+.checks{list-style:none;padding:0;margin:8px 0 0}
+.checks li{border-bottom:1px solid var(--rule)}
+.checks label{display:grid;grid-template-columns:22px 1fr;gap:8px;padding:8px 0;cursor:pointer;align-items:start}
+.checks input{margin-top:4px;width:16px;height:16px;accent-color:var(--accent)}
+.checks .hint{display:block;font-size:.8rem;color:var(--slate)}
+.tri{display:inline-flex;gap:2px;margin-left:auto}
+.checks li.tri-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:7px 0}
+.tri button{border:1px solid var(--rule);background:var(--surface);border-radius:4px;padding:2px 8px;cursor:pointer;font-weight:700;font-size:.85rem}
+.tri button[aria-pressed="true"][data-v="ja"]{background:var(--g1);color:#fff;border-color:var(--g1)}
+.tri button[aria-pressed="true"][data-v="teils"]{background:var(--g3);color:#fff;border-color:var(--g3)}
+.tri button[aria-pressed="true"][data-v="nein"]{background:var(--g5);color:#fff;border-color:var(--g5)}
+
+/* indicators */
+.area{margin-top:22px}
+.area:first-child{margin-top:0}
+.area-head{display:flex;align-items:baseline;gap:10px;border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:4px}
+.area-head .w{margin-left:auto;font-size:.85rem;color:var(--slate)}
+.subgroup{font-size:.85rem;color:var(--slate);margin:14px 0 2px;font-weight:700}
+.ind{padding:12px 0;border-bottom:1px solid var(--rule)}
+.ind-head{display:flex;gap:10px;align-items:baseline}
+.ind-name{font-weight:700}
+.ind-pts{margin-left:auto;font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.seg{display:grid;grid-template-columns:repeat(6,1fr) 44px;gap:4px;margin:8px 0 6px}
+.seg button{border:1px solid var(--rule);background:var(--paper);border-radius:var(--radius-s);padding:7px 0;cursor:pointer;font-weight:700;font-family:var(--display)}
+.seg button.skip{font-family:var(--font);font-weight:400;color:var(--slate)}
+.seg button[aria-pressed="true"]{color:#fff;border-color:transparent}
+.seg button[data-g="1"][aria-pressed="true"]{background:var(--g1)}
+.seg button[data-g="2"][aria-pressed="true"]{background:var(--g2)}
+.seg button[data-g="3"][aria-pressed="true"]{background:var(--g3)}
+.seg button[data-g="4"][aria-pressed="true"]{background:var(--g4)}
+.seg button[data-g="5"][aria-pressed="true"]{background:var(--g5)}
+.seg button[data-g="6"][aria-pressed="true"]{background:var(--g6)}
+.desc{font-size:.92rem;color:var(--slate);min-height:1.4em}
+.desc.on{color:var(--ink)}
+.fine{display:flex;gap:10px;align-items:center;font-size:.85rem;color:var(--slate);margin-top:4px}
+.fine input{flex:1;accent-color:var(--accent)}
+.evid{margin-top:6px;display:flex;flex-direction:column;gap:3px}
+.evid span{font-size:.85rem;padding-left:10px;border-left:3px solid var(--rule)}
+.evid span.p{border-left-color:var(--g1)} .evid span.m{border-left-color:var(--g5)}
+
+/* result */
+.big{font-family:var(--display);font-weight:700;font-size:3.4rem;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.big small{font-size:1rem;font-weight:500;letter-spacing:0;color:var(--slate)}
+.gname{font-family:var(--display);font-size:1.4rem;font-weight:700}
+.arealist{list-style:none;padding:0;margin:12px 0}
+.arealist li{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed var(--rule);font-size:.93rem}
+.note{background:var(--warn-soft);color:var(--ink);border-left:4px solid var(--warn);padding:8px 10px;border-radius:4px;font-size:.88rem;margin-top:8px}
+.note.info{background:var(--accent-soft);border-left-color:var(--accent)}
+.props{display:grid;grid-template-columns:1fr 90px;gap:6px 10px;align-items:center;margin-top:10px}
+.props label{font-size:.9rem}
+.props .ord{font-family:var(--display);font-weight:700;color:var(--slate);margin-right:6px}
+
+/* scale bar */
+.scalebar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--rule);z-index:15;padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px))}
+.scale-inner{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.scale-read{display:flex;align-items:baseline;gap:8px;min-width:170px}
+.scale-read b{font-family:var(--display);font-size:1.6rem;font-variant-numeric:tabular-nums}
+.scale{position:relative;height:30px}
+.bands{display:grid;grid-template-columns:2fr 3fr 3fr 3fr 3fr 2fr;height:12px;border-radius:999px;overflow:hidden;margin-top:4px;direction:rtl}
+.bands span{display:block}
+.bands span:nth-child(1){background:var(--g1)}.bands span:nth-child(2){background:var(--g2)}.bands span:nth-child(3){background:var(--g3)}
+.bands span:nth-child(4){background:var(--g4)}.bands span:nth-child(5){background:var(--g5)}.bands span:nth-child(6){background:var(--g6)}
+.blabels{display:grid;grid-template-columns:2fr 3fr 3fr 3fr 3fr 2fr;font-size:.7rem;color:var(--slate);margin-top:2px;direction:rtl;text-align:center}
+.marker{position:absolute;top:-2px;width:4px;height:20px;background:var(--ink);border-radius:2px;transform:translateX(-50%);transition:left .35s ease}
+.marker.cap{background:var(--warn)}
+@media (prefers-reduced-motion:reduce){.marker{transition:none}}
+@media (max-width:640px){.top{position:static}.scale-inner{grid-template-columns:1fr;gap:4px}.blabels{display:none}body{padding-bottom:104px}}
+
+/* theory tracker */
+.theories{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.th{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;border:1px solid var(--rule);border-radius:var(--radius-s);padding:8px 10px;background:var(--paper)}
+.th b{font-weight:700}
+.th .k{display:block;font-size:.82rem;color:var(--slate)}
+.stufe{display:inline-flex;gap:3px}
+.stufe button{width:30px;height:30px;border-radius:50%;border:1px solid var(--rule);background:var(--surface);cursor:pointer;font-weight:700;font-size:.8rem}
+.stufe button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+.qlist{list-style:none;padding:0;margin:8px 0}
+.qlist li{display:grid;grid-template-columns:1fr auto;gap:8px;padding:8px 0;border-bottom:1px solid var(--rule);align-items:start}
+.steps{counter-reset:s;list-style:none;padding:0;margin:8px 0}
+.steps li{counter-increment:s;display:grid;grid-template-columns:30px 1fr;gap:8px;padding:8px 0;border-bottom:1px solid var(--rule)}
+.steps li::before{content:counter(s);font-family:var(--display);font-weight:700;color:var(--accent)}
+.steps li.done{color:var(--slate);text-decoration:line-through}
+.quote{border-left:3px solid var(--accent);padding:6px 12px;margin:8px 0;background:var(--paper);border-radius:0 4px 4px 0}
+.quote b{display:block;font-size:.82rem;color:var(--slate);font-weight:700}
+
+table.adj{width:100%;border-collapse:collapse;font-size:.85rem}
+.tablewrap{overflow-x:auto}
+table.adj th,table.adj td{border:1px solid var(--rule);padding:6px;vertical-align:top;text-align:left}
+table.adj th{font-family:var(--display)}
+
+.docs{list-style:none;padding:0;margin:10px 0}
+.docs li{display:grid;grid-template-columns:1fr auto;gap:8px;padding:10px 0;border-bottom:1px solid var(--rule);align-items:center}
+.tag{display:inline-block;font-size:.75rem;border:1px solid var(--rule);border-radius:4px;padding:0 6px;color:var(--slate);margin-left:6px}
+.out{white-space:pre-wrap;background:var(--paper);border:1px solid var(--rule);border-radius:var(--radius-s);padding:12px;font-size:.93rem;max-height:420px;overflow:auto}
+.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:8px 16px;border-radius:999px;font-size:.9rem;z-index:50;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+details summary{cursor:pointer;font-weight:700;padding:4px 0}
+.status{font-size:.8rem;color:var(--slate)}
+.empty{padding:22px;text-align:center;color:var(--slate);border:1px dashed var(--rule);border-radius:var(--radius-m)}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">Prüfungsbegleiter<small>Lehrproben und Staatsprüfungen im Thüringer Vorbereitungsdienst</small></div>
+    <div class="cur">
+      <label class="sr" for="curSel">Aktuelle Beobachtung</label>
+      <select id="curSel"></select>
+      <button class="btn sm" data-action="newObs" data-type="praktisch">Neue Lehrprobe</button>
+      <button class="btn sm" data-action="newObs" data-type="muendlich">Neue mündliche Prüfung</button>
+    </div>
+  </div>
+  <nav class="tabs" role="tablist" id="tabs"></nav>
+</header>
+<main id="main"></main>
+<div class="scalebar" aria-live="polite">
+  <div class="scale-inner">
+    <div class="scale-read" id="scaleRead"></div>
+    <div>
+      <div class="scale"><div class="bands"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="blabels"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span></div>
+        <div class="marker" id="marker" style="left:0;display:none"></div></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<input type="file" id="fileIn" class="sr" accept=".txt,.md,.json,.csv,.pdf,.html">
+<input type="file" id="importIn" class="sr" accept=".json">
+
+<script>
+"use strict";
+/* ============================================================
+   GRUNDLAGEN: Notenstufen, Leistungsbilder, Handlungsfelder
+   ============================================================ */
+const GRADES = [
+  {n:1, name:"sehr gut",     min:14, max:15, def:14, txt:"den Anforderungen in besonderem Maße entspricht"},
+  {n:2, name:"gut",          min:11, max:13, def:12, txt:"den Anforderungen voll entspricht"},
+  {n:3, name:"befriedigend", min:8,  max:10, def:9,  txt:"im Allgemeinen den Anforderungen entspricht"},
+  {n:4, name:"ausreichend",  min:5,  max:7,  def:6,  txt:"zwar Mängel aufweist, aber im Ganzen den Anforderungen noch entspricht"},
+  {n:5, name:"mangelhaft",   min:2,  max:4,  def:3,  txt:"den Anforderungen nicht entspricht, jedoch erkennen lässt, dass die notwendigen Grundkenntnisse vorhanden sind"},
+  {n:6, name:"ungenügend",   min:0,  max:1,  def:1,  txt:"den Anforderungen nicht entspricht und selbst die Grundkenntnisse lückenhaft sind"}
+];
+const ADJ = {
+  1:"vielschichtig, allumfassend, tiefgründig, nachhaltig, beispielhaft, überragend, herausragend, in besonderem Maße, optimal, zutreffend, korrekt, sicher, konsequent, souverän, flexibel, kompetent, kohärent, flüssig, logisch, vollständig, professionell, differenziert",
+  2:"umfassend, überwiegend, vorwiegend, fundiert, zielgerichtet, schlüssig, gelungen, überzeugend, themengerecht",
+  3:"angemessen, solide, weitgehend, im Wesentlichen, prinzipiell, grundsätzlich, mit Abstrichen/Einschränkungen, brauchbar, akzeptabel, zweckmäßig, tragfähig, praktikabel, bemüht",
+  4:"im Ansatz, ansatzweise, oberflächlich, mit Hilfen, punktuell, mit erheblichen Abstrichen, partiell, teilweise, bedingt, hinreichend, erkennbar, nachvollziehbar",
+  5:"lückenhaft, kaum, widersprüchlich, unzureichend, stockend, wenig",
+  6:"nicht, fehlt, falsch, gravierende Mängel, konzeptionslos, keine, fehlerhaft, abwegig, diffus"
+};
+function gradeOf(p){ if(p==null||isNaN(p)) return null; const r=Math.round(p); return GRADES.find(g=>r>=g.min && r<=g.max) || GRADES[5]; }
+
+const I = (id,group,name,subj,levels)=>({id,group,name,subj,levels});
+const PROFILES = {
+  praktisch:{ label:"Praktische Prüfung / Lehrprobe", areas:[
+    {id:"planung", name:"Planung (Entwurf)", items:[
+      I("P1","","Gesamtdarstellung","Der Entwurf",["wird stringent und logisch strukturiert","wird überwiegend stringent und schlüssig strukturiert","wird zweckmäßig strukturiert","wird erkennbar und nachvollziehbar strukturiert","wird kaum strukturiert","ist konzeptionslos"]),
+      I("P2","","Formale Vorgaben, Aspekte, Kriterien","Formale Vorgaben, Aspekte und Kriterien",["werden vollständig und fehlerfrei eingehalten","werden überwiegend fehlerfrei eingehalten","werden im Wesentlichen eingehalten","werden mit erheblichen Einschränkungen eingehalten","werden kaum eingehalten","werden nicht eingehalten"]),
+      I("P3","","Fachliche Korrektheit","Die fachliche Korrektheit",["wird vielschichtig (verdeutlichend differenziert) nachgewiesen","wird fundiert nachgewiesen","wird mit Abstrichen, aber zweckmäßig nachgewiesen","wird punktuell und oberflächlich nachgewiesen","wird kaum sinnvoll und lückenhaft nachgewiesen","wird nicht oder fehlerhaft nachgewiesen"]),
+      I("P4","","Zielgruppenorientierte didaktische, fachdidaktische und pädagogische Konzepte und Methoden","Das Anwenden zielgruppenorientierter didaktischer, fachdidaktischer und pädagogischer Konzepte und Methoden",["wird vielschichtig und kompetent erörtert","wird umfassend und schlüssig erörtert","wird solide und zweckmäßig erörtert","wird oberflächlich, aber hinreichend erörtert","wird unzureichend erörtert","ist konzeptionslos"])
+    ]},
+    {id:"durchfuehrung", name:"Durchführung", items:[
+      I("D1","Beziehungsqualität","Lernatmosphäre (lernförderliches Klima, Lernumgebung)","",["Es wird eine Lernatmosphäre geschaffen, welche die Entfaltung der Lernkompetenz jedes einzelnen Schülers im höchsten Maß gewährleistet","Es wird eine Lernatmosphäre geschaffen, welche die Entfaltung der Lernkompetenz jedes einzelnen Schülers zielgerichtet gewährleistet","Es wird eine Lernatmosphäre geschaffen, welche die Entfaltung der Lernkompetenz jedes einzelnen Schülers grundsätzlich gewährleistet","Es wird eine Lernatmosphäre geschaffen, welche die Entfaltung der Lernkompetenz jedes einzelnen Schülers punktuell gewährleistet","Eine lernförderliche Atmosphäre wird kaum geschaffen","Eine lernförderliche Atmosphäre wird nicht geschaffen"]),
+      I("D2","Beziehungsqualität","Pädagogische Grundhaltung","Die pädagogische Grundhaltung",["wird professionell zum Ausdruck gebracht","wird überzeugend zum Ausdruck gebracht","ist prinzipiell wahrnehmbar","ist partiell wahrnehmbar","ist unzureichend wahrnehmbar","ist nicht wahrnehmbar"]),
+      I("D3","didaktisch-methodisch","Unterrichtseinstieg","Der Unterrichtseinstieg",["wird optimal schülerorientiert gestaltet","wird gelungen und schülerorientiert gestaltet","wird praktikabel und schülerorientiert gestaltet","wird bedingt schülerorientiert gestaltet","wird kaum schülerorientiert oder stockend gestaltet","wird nicht schülerorientiert und/oder falsch gestaltet"]),
+      I("D4","didaktisch-methodisch","Individueller Lern- und Kompetenzzuwachs","Der individuelle Lern- und Kompetenzzuwachs",["wird optimal und professionell gesteuert","wird überwiegend professionell und gelungen gesteuert","wird solide und zweckmäßig gesteuert","wird ansatzweise zweckmäßig gesteuert","wird unzureichend gesteuert","wird nicht oder falsch gesteuert"]),
+      I("D5","didaktisch-methodisch","Verstehens- und Aneignungsprozesse","Verstehens- und Aneignungsprozesse",["werden optimal ermöglicht und differenziert unterstützt","werden umfassend ermöglicht und überwiegend differenziert unterstützt","werden grundsätzlich ermöglicht und angemessen unterstützt","werden ansatzweise ermöglicht und unterstützt","werden kaum ermöglicht und unzureichend unterstützt","werden nicht ermöglicht und nicht unterstützt"]),
+      I("D6","didaktisch-methodisch","Steuerung der Lernprozesse","Die Steuerung der Lernprozesse",["gelingt optimal und professionell","gelingt zielgerichtet","gelingt zweckmäßig","ist erkennbar","gelingt unzureichend","gelingt nicht"]),
+      I("D7","didaktisch-methodisch","Reflexions- und Feedbackkultur","Die Reflexions- und Feedbackkultur",["ist konsequent entwickelt und wird nachhaltig gepflegt","ist entwickelt und wird zielgerichtet gepflegt","ist grundsätzlich entwickelt und wird zweckmäßig gepflegt","wird ansatzweise entwickelt","ist wenig entwickelt","ist nicht entwickelt"]),
+      I("D8","didaktisch-methodisch","Flexibilität","",["In unerwarteten Situationen wird professionell reagiert und souverän aufgetreten","In unerwarteten Situationen wird überwiegend professionell reagiert und überzeugend aufgetreten","In unerwarteten Situationen wird angemessen reagiert und akzeptabel aufgetreten","In unerwarteten Situationen wird ansatzweise zweckmäßig reagiert","In unerwarteten Situationen wird unzureichend reagiert","In unerwarteten Situationen wird nicht oder falsch reagiert"]),
+      I("D9","fachlich","Fachliche und fachsprachliche Korrektheit","Die fachliche und fachsprachliche Korrektheit",["wird vielschichtig (differenziert, beispielhaft) nachgewiesen","wird fundiert nachgewiesen","wird grundsätzlich nachgewiesen","wird hinreichend nachgewiesen","wird kaum oder lückenhaft nachgewiesen","wird nicht nachgewiesen"]),
+      I("D10","pädagogisch-erzieherisch","Klassenmanagement","Das Klassenmanagement",["wird optimal geführt und nachhaltig umgesetzt","wird gelungen geführt und zielgerichtet umgesetzt","wird solide geführt und tragfähig umgesetzt","wird erkennbar geführt und oberflächlich umgesetzt","wird unzureichend geführt","wird nicht oder konzeptionslos geführt"]),
+      I("D11","pädagogisch-erzieherisch","Sinnstiftendes Kommunizieren, Sprachkompetenz der Schüler","Sinnstiftendes Kommunizieren sowie die aktive und passive Sprachkompetenz der Schüler",["wird nachhaltig und sicher gefördert","wird zielgerichtet gefördert","wird zweckmäßig und angemessen gefördert","wird im Ansatz gefördert","wird unzureichend gefördert","wird nicht gefördert"])
+    ]},
+    {id:"reflexion", name:"Reflexion", items:[
+      I("R1","","Erkenntnisse und Erfahrungen, Wertungen und Schlussfolgerungen","Erkenntnisse und Erfahrungen, Wertungen und Schlussfolgerungen",["werden in besonderem Maße überzeugend fach- und sachlogisch erörtert","werden umfassend und vorwiegend fach- und sachlogisch erörtert","werden angemessen und im Wesentlichen fach- und sachlogisch erörtert","werden oberflächlich und teilweise fach- und sachlogisch erörtert","werden kaum erörtert","werden nicht oder konzeptionslos erörtert"]),
+      I("R2","","Mehrperspektivität","Mehrperspektivität",["wird professionell erreicht","wird zielgerichtet und schlüssig erreicht","wird weitgehend und tragfähig erreicht","wird ansatzweise erreicht","wird kaum erreicht","wird nicht erreicht"]),
+      I("R3","","Eigenes Verhalten, Wirkung im Prozess, Transfer","Das eigene Verhalten und dessen Wirkung im Prozess sowie der Transfer für den persönlichen Lernprozess werden",["logisch analysiert und beispielhaft erläutert","umfassend analysiert und schlüssig erläutert","angemessen analysiert und tragfähig erläutert","oberflächlich analysiert und nachvollziehbar erläutert","lückenhaft analysiert und kaum erläutert","nicht analysiert"])
+    ]}
+  ]},
+  muendlich:{ label:"Mündliche Prüfung", areas:[
+    {id:"fachlichkeit", name:"Fachlichkeit", items:[
+      I("M1","","Theoriegeleitete Betrachtung der Handlungssituation","Die Handlungssituation",["wird komplex analysiert und tiefgründig, vergleichend erläutert","wird umfassend analysiert und überwiegend erläutert","wird angemessen analysiert und prinzipiell erläutert","wird ansatzweise analysiert und oberflächlich erläutert","wird kaum analysiert und unzureichend erläutert","wird nicht analysiert und nicht erläutert"]),
+      I("M2","","Fachliche Korrektheit","Die fachliche Korrektheit",["wird vielschichtig, differenziert, beispielhaft nachgewiesen","wird fundiert nachgewiesen","wird grundsätzlich nachgewiesen","wird hinreichend nachgewiesen","wird kaum oder lückenhaft nachgewiesen","wird nicht nachgewiesen"]),
+      I("M3","","Bezug zu Schulgesetz, Richtlinien, Lehrplänen und Fachliteratur","Der Bezug zu schulgesetzlichen Regelungen, Richtlinien und Lehrplänen sowie entsprechender Fachliteratur",["wird korrekt hergestellt","wird überwiegend korrekt hergestellt","wird weitgehend korrekt hergestellt","wird teilweise korrekt hergestellt","wird kaum hergestellt","wird nicht hergestellt"]),
+      I("M4","","Schwerpunktsetzung innerhalb der Handlungssituation","Die Schwerpunktsetzung innerhalb der Handlungssituation",["gelingt professionell","gelingt themengerecht","gelingt zweckmäßig","gelingt teilweise themengerecht und nachvollziehbar","gelingt kaum oder lückenhaft","gelingt nicht oder fehlt"]),
+      I("M5","","Bildungswissenschaftlicher und fachspezifischer Gehalt","Bildungswissenschaftlicher und fachspezifischer Gehalt",["werden professionell ausgeführt und konsequent, souverän aufeinander bezogen","werden zielgerichtet ausgeführt und themengerecht, überzeugend aufeinander bezogen","werden prinzipiell ausgeführt und zweckmäßig aufeinander bezogen","werden partiell, punktuell oder oberflächlich ausgeführt und bedingt aufeinander bezogen","werden unzureichend ausgeführt und widersprüchlich oder kaum aufeinander bezogen","werden nicht ausgeführt und nicht aufeinander bezogen"]),
+      I("M6","","Konzeptionelle Entscheidungen auf Basis von Theorien und Modellen","Konzeptionelle Entscheidungen auf der Basis von Theorien und Modellen",["werden allumfassend begründet","werden umfassend begründet","werden grundsätzlich begründet","werden ansatzweise begründet","werden widersprüchlich oder unzureichend begründet","werden nicht begründet"]),
+      I("M7","","Auseinandersetzung des Lehramtsanwärters","Der Lehramtsanwärter agiert dabei",["kompetent und konsequent in der Auseinandersetzung","zielgerichtet und schlüssig in der Auseinandersetzung","zweckmäßig in der Auseinandersetzung","in kaum erkennbarer Auseinandersetzung","ohne Auseinandersetzung","konzeptionslos"])
+    ]},
+    {id:"kommunikation", name:"Kommunikation", items:[
+      I("K1","","Umgang mit Fragen und Impulsen","Der Lehramtsanwärter",["reagiert souverän, flexibel, kompetent","reagiert überzeugend und zielgerichtet","reagiert angemessen","reagiert oberflächlich oder punktuell","reagiert unpassend und unsicher","reagiert nicht"]),
+      I("K2","","Problemerfassung und -darstellung","Die Problemerfassung und -darstellung",["gelingt tiefgründig, allumfassend, souverän","gelingt umfassend und überzeugend","gelingt im Wesentlichen","gelingt hinreichend, bedingt, teilweise","gelingt kaum","gelingt nicht"]),
+      I("K3","","Plausibilität, Folgerichtigkeit, Stringenz im Vortrag","Plausibilität, Folgerichtigkeit und Stringenz in der Vortragsweise",["werden in besonderem Maße und optimal erreicht","werden zielgerichtet erreicht","werden weitgehend erreicht","werden ansatzweise erreicht","werden kaum erreicht","werden nicht erreicht"])
+    ]},
+    {id:"reflexion", name:"Reflexion", items:[
+      I("MR1","","Theoriegeleitete Praxisreflexion","Die theoriegeleitete Praxisreflexion",["gelingt allumfassend und souverän","gelingt umfassend und fundiert","gelingt im Wesentlichen","gelingt im Ansatz","gelingt kaum oder widersprüchlich","gelingt nicht oder abwegig"]),
+      I("MR2","","Mehrperspektivität","Mehrperspektivität",["wird professionell erreicht","wird zielgerichtet und schlüssig erreicht","wird weitgehend und tragfähig erreicht","wird ansatzweise erreicht","wird kaum erreicht","wird nicht erreicht"]),
+      I("MR3","","Vernetzung zu weiteren Handlungssituationen","Die Vernetzung zu weiteren Handlungssituationen",["wird optimal hergestellt","wird zielgerichtet hergestellt","wird prinzipiell hergestellt","wird oberflächlich hergestellt","wird unzureichend hergestellt","wird nicht hergestellt"]),
+      I("MR4","","Eigenes Professionshandeln","Das eigene Professionshandeln",["wird nachhaltig reflektiert","wird überzeugend reflektiert","wird grundsätzlich reflektiert","wird partiell reflektiert","wird unzureichend reflektiert","wird nicht reflektiert"])
+    ]},
+    {id:"innovation", name:"Innovation", items:[
+      I("I1","","Potenzen und Ressourcen für den Schulentwicklungsprozess","Potenzen und Ressourcen für den Schulentwicklungsprozess",["werden tiefgründig erörtert","werden fundiert erörtert","werden grundsätzlich erörtert","werden bedingt oder oberflächlich erörtert","werden unzureichend erörtert","werden nicht erörtert"]),
+      I("I2","","Eigener und kollektiver Lern- und Entwicklungsbedarf, Maßnahmen","Eigener und kollektiver Lern- und Entwicklungsbedarf sowie Maßnahmen",["werden zutreffend und souverän abgeleitet und konzipiert","werden schlüssig abgeleitet und konzipiert","werden im Wesentlichen abgeleitet und konzipiert","werden mit erheblichen Abstrichen, aber erkennbar abgeleitet und konzipiert","werden widersprüchlich oder lückenhaft abgeleitet und konzipiert","werden fehlerhaft abgeleitet oder bleiben konzeptionslos"])
+    ]}
+  ]}
+};
+const DEFAULT_WEIGHTS = {
+  praktisch:{planung:20, durchfuehrung:50, reflexion:30},
+  muendlich:{fachlichkeit:40, kommunikation:20, reflexion:30, innovation:10}
+};
+
+/* Beobachtungs-Stichworte → Indikator */
+const TAGS = {
+  praktisch:[
+    ["Einstieg","D3"],["Roter Faden / Struktur","D6"],["Zielklarheit","D4"],["Lernzuwachs","D4"],["Sicherung","D5"],
+    ["Differenzierung","D5"],["Schüleraktivierung","D5"],["Sozialformen / Methoden","D6"],["Medien / Tafelbild","D6"],
+    ["Zeitmanagement","D6"],["Feedback","D7"],["Situative Flexibilität","D8"],["Fachlichkeit / Fachsprache","D9"],
+    ["Klassenmanagement","D10"],["Lehrersprache","D11"],["Schülersprache","D11"],["Lernklima","D1"],["L-S-Beziehung","D2"],
+    ["Entwurf: Struktur","P1"],["Entwurf: Formalia","P2"],["Entwurf: Sachanalyse","P3"],["Entwurf: Didaktik / Lerngruppe","P4"],
+    ["Reflexion: Schlussfolgerungen","R1"],["Reflexion: Perspektiven","R2"],["Reflexion: eigenes Handeln","R3"]
+  ],
+  muendlich:[
+    ["Theoriebezug","M1"],["Fachlich korrekt","M2"],["Fachlicher Fehler","M2"],["Recht / Lehrplan / Literatur","M3"],["Schwerpunkt","M4"],
+    ["Bildungswiss. + Fach","M5"],["Begründung","M6"],["Auseinandersetzung","M7"],["Umgang mit Fragen","K1"],["Problemdarstellung","K2"],
+    ["Stringenz Vortrag","K3"],["Praxisreflexion","MR1"],["Mehrperspektivität","MR2"],["Vernetzung","MR3"],["Professionshandeln","MR4"],
+    ["Schulentwicklung","I1"],["Entwicklungsbedarf","I2"]
+  ]
+};
+
+const PHASES = {
+  praktisch:[
+    {id:"entwurf", name:"Entwurf", target:null},
+    {id:"stunde", name:"Stunde", target:45},
+    {id:"vorbereitung", name:"Vorbereitungszeit", target:20, hint:"15–20 Min., zzgl. Aufräumen"},
+    {id:"reflexion", name:"Reflexion", target:20, hint:"STEX 10–20 Min., BLP ca. 10 Min."},
+    {id:"fragen", name:"Fragen / Beratung", target:20, hint:"STEX: nur Verständnisfragen; BLP: max. 20 Min. Beratung"},
+    {id:"ausschuss", name:"Beratung Ausschuss", target:null}
+  ],
+  muendlich:[
+    {id:"vortrag", name:"Vortrag", target:15},
+    {id:"gespraech", name:"Prüfungsgespräch", target:30},
+    {id:"ausschuss", name:"Beratung Ausschuss", target:null}
+  ]
+};
+
+const ENTWURF_CHECKS = [
+  ["stempel","Eingang am Vortag bis 12 Uhr mit Eingangsstempel und Unterschrift","Montagstermin: Freitag 12 Uhr; digital an alle Beteiligten"],
+  ["umfang","Umfang 8–12 Seiten ohne Anhang",""],
+  ["layout","Arial 12 pt, 1,5-zeilig, Blocksatz",""],
+  ["deckblatt","Deckblatt f_225 bzw. Kopfdaten vollständig",""],
+  ["bed","Bedingungsanalyse: lerngruppenspezifische, fachspezifische und organisatorische Voraussetzungen","ca. 2 Seiten, mit Konsequenzen für den Unterricht"],
+  ["stellung","Stellung der Stunde: didaktische Analyse (Exemplarität, Gegenwarts-, Zukunftsbedeutung), Auszug 6–8 Stunden",""],
+  ["ziele","2–3 kompetenzorientierte, abrechenbare Lernziele (können + Operator), nicht nur Sachkompetenz","lehrplanbasiert begründet, Prozessziel formuliert"],
+  ["begr","Begründung der didaktisch-methodischen Entscheidungen (Kern, ca. 4 Seiten): das Warum der Phasierung","Bezug zu Lerngruppe und Zielen, Differenzierung, ggf. Reserve/Variante"],
+  ["verlauf","Tabellarische Stundenplanung (Zeit, Funktion, Verlauf, Sozialform/Methode, Medien)",""],
+  ["sitzplan","Kommentierter Sitzplan",""],
+  ["material","Materialien inkl. Tafel- und Erwartungsbilder",""],
+  ["lit","Literaturverzeichnis und Erklärung",""],
+  ["ds","Datenschutz und gendergerechte Formulierungen beachtet",""]
+];
+const REFLEXION_CHECKS = [
+  ["gesamt","Gesamteindruck begründet (Zufriedenheit, Positives, balancierte Kritik)",""],
+  ["ziele","Zielerreichung analysiert, an konkreten Schülerleistungen belegt",""],
+  ["ursachen","Ursachen für Erreichen/Nichterreichen mit didaktisch-methodischen Entscheidungen verknüpft",""],
+  ["gruppe","Arbeit in der Lerngruppe (L-S-Verhältnis, Lernertrag, Aktivität, Effekt der Sozialformen)",""],
+  ["abw","Planungsabweichungen begründet",""],
+  ["alt","Alternativen entwickelt und begründet",""],
+  ["theorie","Theoriegeleitete Analyse",""],
+  ["perspekt","Mehrperspektivität (Schülersicht, Lehrersicht, Fach)",""],
+  ["eigen","Eigenes Verhalten und dessen Wirkung reflektiert",""],
+  ["konseq","Schlussfolgerungen für die weitere Arbeit",""],
+  ["keine_nach","Keine Nacherzählung der Stunde","„nein“ wählen, wenn überwiegend nacherzählt wurde"]
+];
+
+const FELDER = [
+  {n:1,name:"Bildung und Erziehung",leit:"Welchen Bildungs- und Erziehungsauftrag hat Schule und wie lässt sich pädagogisches Handeln begründen?",th:[
+    ["Klafki – kritisch-konstruktive Bildungstheorie","Selbst-, Mitbestimmungs-, Solidaritätsfähigkeit; kategoriale Bildung; didaktische Analyse; Schlüsselprobleme"],
+    ["Humboldt – Bildung","Aktive Auseinandersetzung mit sich und der Welt; Bildung ist mehr als Ausbildung"],
+    ["Dewey – Lernen durch Erfahrung","Erfahrung → Problem → Erprobung → Reflexion; Demokratie als Lebensform"],
+    ["Hurrelmann – Sozialisation","Produktive Verarbeitung innerer und äußerer Realität; Entwicklungsaufgaben"],
+    ["Bronfenbrenner – ökologisches Modell","Mikro-, Meso-, Exo-, Makro-, Chronosystem"]],
+   imp:["Begründen Sie die Bildungsbedeutung des Inhalts Ihrer Prüfungsstunde.","Welche individuellen und sozialen Bedingungen könnten das beobachtete Schülerverhalten erklären?","In welchem Spannungsfeld (z. B. Förderung ↔ Selektion) bewegte sich Ihr Handeln?"]},
+  {n:2,name:"Beruf und Rolle",leit:"Was bedeutet professionelles Lehrerhandeln und wie geht eine Lehrkraft mit den Widersprüchen ihres Berufs um?",th:[
+    ["Baumert & Kunter – COACTIV","Professionswissen + Überzeugungen + Motivation + Selbstregulation"],
+    ["Shulman – PCK","Content, Pedagogical, Pedagogical Content Knowledge"],
+    ["Schön – Reflective Practitioner","Reflection-in-action und Reflection-on-action"],
+    ["Helsper – Antinomien","Nähe ↔ Distanz, Einheitlichkeit ↔ Differenzierung, Autonomie ↔ Kontrolle …"],
+    ["Oser – Standardsituationen","Wiederkehrende Situationen zunehmend sicher und reflektiert bearbeiten"]],
+   imp:["Warum haben Sie in dieser Situation so gehandelt?","Welche Antinomie wurde in Ihrer Stunde besonders sichtbar und wie haben Sie sie ausbalanciert?","Wo zeigte sich Reflection-in-action?"]},
+  {n:3,name:"Didaktik und Methodik",leit:"Wie muss Unterricht gestaltet werden, damit fachliches und überfachliches Lernen wahrscheinlich wird?",th:[
+    ["Meyer – 10 Merkmale guten Unterrichts","Strukturierung, echte Lernzeit, Klima, inhaltliche Klarheit, Sinnstiftung …"],
+    ["Helmke – Angebots-Nutzungs-Modell","Lehrerangebot → Nutzung → Lernaktivität → Lernergebnis"],
+    ["Hattie – Visible Learning","Teacher Clarity, Feedback, formative Evaluation, Metakognition"],
+    ["Klieme – Tiefenstrukturen","Klassenführung, kognitive Aktivierung, konstruktive Unterstützung"],
+    ["Cognitive Load Theory","Intrinsische, extrinsische und lernbezogene Belastung"],
+    ["Constructive Alignment","Lernziel → Lernaktivität → Leistungsnachweis"]],
+   imp:["Wie beurteilen Sie die kognitive Aktivierung jenseits der Sichtstruktur Ihrer Methode?","Wo passten Ziel, Lernaktivität und Überprüfung zusammen, wo nicht?","Was sagt das Angebots-Nutzungs-Modell über den beobachteten Lernerfolg?"]},
+  {n:4,name:"Lernen, Entwicklung und Sozialisation",leit:"Wie lernen Menschen und welche Entwicklungs- und Umweltbedingungen beeinflussen Lernprozesse?",th:[
+    ["Wygotski – Zone der nächsten Entwicklung","Mit Unterstützung bewältigbar, weder zu leicht noch unbewältigbar"],
+    ["Bruner – Scaffolding","Hilfe → Selbstständigkeit → Abbau der Hilfe"],
+    ["Piaget – kognitive Entwicklung","Assimilation, Akkommodation, Äquilibration"],
+    ["Bandura – sozial-kognitive Lerntheorie","Modelllernen, Selbstwirksamkeit"],
+    ["Bronfenbrenner","Lernprobleme aus Wechselwirkungen der Lebensbereiche"]]
+   ,imp:["Lag die Aufgabe in der Zone der nächsten Entwicklung aller Lernenden?","Welche Scaffolds haben Sie eingesetzt und wie würden Sie sie abbauen?"]},
+  {n:5,name:"Leistungs- und Lernmotivation",leit:"Warum wollen oder wollen Schülerinnen und Schüler nicht lernen?",th:[
+    ["Deci & Ryan – Selbstbestimmungstheorie","Autonomie, Kompetenzerleben, soziale Eingebundenheit"],
+    ["Bandura – Selbstwirksamkeit","Erfolgserfahrungen als stärkste Quelle"],
+    ["Pekrun – Kontroll-Wert-Theorie","Wahrgenommene Kontrolle und Wert bestimmen Lernemotionen"],
+    ["Zimmerman – selbstreguliertes Lernen","Planen → Handeln → Überwachen → Reflektieren → Anpassen"],
+    ["Dweck – Mindset","Fixed vs. Growth Mindset; prozessbezogenes Feedback"]],
+   imp:["Wie haben Sie die drei Grundbedürfnisse in der Stunde unterstützt?","Woran würden Sie unterscheiden, ob Arbeitsverweigerung motivational oder durch Überforderung bedingt ist?"]},
+  {n:6,name:"Differenzierung, Integration und Förderung",leit:"Wie kann Unterricht Verschiedenheit berücksichtigen und gleichzeitig gemeinsames Lernen ermöglichen?",th:[
+    ["Heterogenität","Beschreibung, keine Diagnose"],
+    ["Differenzierungsformen","Quantitativ, qualitativ, methodisch, sozialformbezogen, inhaltlich"],
+    ["Wygotski und Scaffolding","Diagnose → Unterstützung → Selbstständigkeit → Abbau"],
+    ["Universal Design for Learning","Darstellung, Handlung/Ausdruck, Engagement"]],
+   imp:["Auf welcher diagnostischen Grundlage haben Sie differenziert?","Wie gestalten Sie Unterricht so, dass unterschiedliche Lernende Zugang erhalten?"]},
+  {n:7,name:"Diagnostik, Beurteilung und Beratung",leit:"Wie erkenne ich Lernstände, leite daraus Förderung ab und beurteile Leistungen fair?",th:[
+    ["Formative und summative Diagnostik","Lernen anpassen vs. Leistung bilanzieren"],
+    ["Gütekriterien","Objektivität, Reliabilität, Validität"],
+    ["Bezugsnormen","Sozial, kriterial, individuell"],
+    ["Klauer – pädagogische Diagnostik","Diagnose → Hypothese → Intervention → Evaluation"],
+    ["Black & Wiliam – formative Assessment","Lernstandsinformationen für nächste Schritte nutzen"],
+    ["Feedback nach Hattie","Feed Up, Feed Back, Feed Forward"],
+    ["Beratungsansätze","Rogers, lösungsorientiert, systemisch"]],
+   imp:["Wie haben Sie den Lernstand in der Stunde erfasst und genutzt?","Welche Bezugsnorm passt zur Funktion Ihrer Leistungsrückmeldung?"]},
+  {n:8,name:"Kommunikation",leit:"Wie kann Kommunikation Beziehungen gestalten, Lernen ermöglichen und Konflikte bearbeiten?",th:[
+    ["Watzlawick – Axiome","Inhalts- und Beziehungsaspekt, Zirkularität"],
+    ["Schulz von Thun – Kommunikationsquadrat","Sachinhalt, Selbstoffenbarung, Beziehung, Appell"],
+    ["Rogers","Empathie, Kongruenz, Wertschätzung"],
+    ["Gordon","Aktives Zuhören, Ich-Botschaften, Win-win"],
+    ["Kounin – Klassenführung","Withitness, Overlapping, Momentum, Smoothness, Group Focus"]],
+   imp:["Analysieren Sie eine Unterrichtsstörung mit Blick auf die Beziehungsebene.","Welche präventiven Elemente der Klassenführung waren wirksam?"]},
+  {n:9,name:"Medienbildung",leit:"Wie können digitale und analoge Medien didaktisch sinnvoll eingesetzt und kritisch reflektiert werden?",th:[
+    ["TPACK","Fach + Pädagogik + Technologie im Zusammenspiel"],
+    ["SAMR","Substitution, Augmentation, Modification, Redefinition"],
+    ["Mayer – Multimedia Learning","Begrenzte Verarbeitungskapazität, Überladung vermeiden"],
+    ["Medienkompetenz","Informationssuche, Quellenbewertung, Datenschutz, Urheberrecht …"],
+    ["KI im Unterricht","Didaktik vor Technik; Chancen und Risiken"]],
+   imp:["Welchen didaktischen Mehrwert hatte der Medieneinsatz für das Lernziel?","Wie würden Sie KI in dieser Einheit lernwirksam und verantwortungsvoll einsetzen?"]},
+  {n:10,name:"Schulentwicklung",leit:"Wie können Schule und Unterricht systematisch weiterentwickelt werden?",th:[
+    ["Rolff – Schulentwicklung","Unterrichts-, Personal-, Organisationsentwicklung"],
+    ["Fullan – Veränderungsprozesse","Sinngebung, Beteiligung, Umgang mit Widerstand"],
+    ["Senge – Lernende Organisation","Fünf Disziplinen, Systemdenken"],
+    ["Professionelle Lerngemeinschaften","Gemeinsame Verantwortung für Lernen"],
+    ["Evaluation","Ausgangslage → Ziel → Maßnahme → Indikatoren → Evaluation → Anpassung"]],
+   imp:["Welches Potenzial Ihrer Unterrichtsidee sehen Sie für die Fachschaft oder Schule?","Woran würden Sie erkennen, ob eine Maßnahme wirkt?"]},
+  {n:11,name:"Bildungsforschung",leit:"Wie kann wissenschaftliche Erkenntnis professionelles Handeln unterstützen?",th:[
+    ["Evidenzbasierung","Evidenz informiert das professionelle Urteil, ersetzt es nicht"],
+    ["Quantitative Forschung","Korrelation ist nicht Kausalität"],
+    ["Effektstärke","Praktische Bedeutsamkeit; d = 0,40 kein Grenzwert"],
+    ["Qualitative Forschung","Prozesse, Kontexte, subjektive Perspektiven"],
+    ["Triangulation","Mehrere Perspektiven auf ein Phänomen"],
+    ["Meta-Analyse","Nur so gut wie die zugrunde liegenden Studien"],
+    ["Forschungsorientierte Reflexion","Was weiß ich, woher, wie sicher, welche Alternativen?"]],
+   imp:["Wie sicher ist das Wissen, auf das Sie Ihre Entscheidung stützen?","Welche Daten könnten Sie zusätzlich erheben, um Ihre Deutung zu prüfen?"]}
+];
+const thKey = n=>String(n).replace(/[.\/\[\]#$~*`]/g,"_");
+const STUFEN = ["Reproduktion","Anwendung","Vernetzung","Professionelle Reflexion"];
+
+const QUESTIONS = [
+  {mode:"stex",cat:"Verständnisfragen (STEX)",items:[
+    "Wie erklären Sie den Unterschied zwischen Ihrer geplanten und der tatsächlich beobachteten Lernaktivität? Welche Konsequenz leiten Sie daraus ab?",
+    "Woran machen Sie fest, ob Ihre Lernziele erreicht wurden?",
+    "Woran konnten Sie heute erkennen, dass bei den SuS ein Lernfortschritt stattgefunden hat?",
+    "Wo haben Sie heute spontan auf die Lerngruppe reagiert und Ihr geplantes Vorgehen angepasst?",
+    "Welche pädagogische Entscheidung haben Sie während der Unterrichtsstörung getroffen und wie begründen Sie diese?",
+    "Begründen Sie bitte noch einmal konkret die Gegenwarts- und Zukunftsbedeutung der Thematik für die SuS.",
+    "Diesen Aspekt würde ich gern noch einmal erklärt bekommen: …"]},
+  {mode:"blp",cat:"Stundenplanung und Alternativen",items:[
+    "Sie haben sich bewusst für diesen Einstieg entschieden. Warum?",
+    "Welche Alternativen hätte es Ihrer Meinung nach in der methodischen Planung noch gegeben?",
+    "Ein Schüler hatte in vielen Phasen große Probleme. Haben Sie in Ihrer Planung über Unterstützungsangebote nachgedacht? Wie könnten diese aussehen?",
+    "Welche Gedanken haben bei der Gruppeneinteilung eine Rolle gespielt?",
+    "An welchen Stellen könnten Sie sich vorstellen, eine kooperative Lernform einzubauen?",
+    "Wenn Sie diese Stunde morgen noch einmal mit derselben Lerngruppe durchführen würden: Was würden Sie beibehalten, was verändern?",
+    "Wie schätzen Sie den Redeanteil Schüler/Lehrer ein? Welche Alternativen sehen Sie?"]},
+  {mode:"blp",cat:"Differenzierung und Heterogenität",items:[
+    "Sie beschreiben eine heterogene Lerngruppe. Wie werden Sie diesen Unterschieden in Ihrer Planung gerecht?",
+    "Haben Sie über ein Differenzierungs- oder Hilfsangebot für die einzelnen Gruppen nachgedacht?",
+    "Welche weiteren Möglichkeiten der Differenzierung sehen Sie?"]},
+  {mode:"blp",cat:"Lernziele und Lernfortschritt",items:[
+    "Woran machen Sie fest, ob Ihre Lernziele erreicht wurden?",
+    "Woran konnten Sie heute einen Lernfortschritt erkennen?"]},
+  {mode:"blp",cat:"Lehrer-Schüler-Verhältnis",items:[
+    "Wir haben ein positives Lehrer-Schüler-Verhältnis gesehen. Wie konnten Sie dies erreichen?",
+    "Welche pädagogische Entscheidung haben Sie während der Unterrichtsstörung getroffen? Würden Sie im Nachhinein wieder so handeln?"]},
+  {mode:"blp",cat:"Motivation",items:[
+    "Warum war der Einstieg für die SuS (nicht) motivierend?",
+    "Schätzen Sie auf einer Skala von 1 bis 10 begründet ein, wie gut Sie die SuS zu Beginn abgeholt haben.",
+    "Begründen Sie bitte konkret die Gegenwarts- und Zukunftsbedeutung der Thematik."]}
+];
+
+const ABLAUF = {
+  stex:{title:"Praktische Prüfung (STEX)", pre:[
+    "Modus klären (Modus 1: beide praktischen Prüfungen; Modus 2: praktische und mündliche Prüfung eines Fachs)",
+    "Entwürfe mit Eingangsstempel im Sekretariat abholen (ein Exemplar fürs Archiv)",
+    "Prüfungsausschuss bzw. Unterausschuss feststellen: PV, FL, VdS/VfA; fbL beratend ohne Notenvorschlag",
+    "Funktionstrennung prüfen (VfA und fbL ohne Doppelfunktion); Formblatt f_230 bereithalten",
+    "Prüfling informieren: Ablauf, Zeitrahmen, Verständnisfragen, Zeitpunkt der Notenbekanntgabe",
+    "Gesundheitsfrage stellen; Prüfungsruhe herstellen"],
+   steps:["Eröffnung und Belehrung: Begrüßung, Gesundheitsfrage, Prüfungscharakter","Prüfungslehrprobe beobachten, Wesentliches stichwortartig protokollieren","Vorbereitungszeit 15–20 Minuten (zzgl. Aufräumen)","Reflexion des LAA (10–20 Min.): Planung, Durchführung, Lernzuwachs, Zielerreichung, Abweichungen, Alternativen","Verständnisfragen: komplex, offen; keine Beratung, kein Abprüfen","Abschluss der Anhörung: LAA und Nicht-Stimmberechtigte verlassen den Raum","Notenfestsetzung: FL → VdS/VfA → PV; Note festsetzen und dokumentieren","Verkündung mit kurzer Begründung, Kenntnisnahme, Verabschiedung; Unterlagen sichern"]},
+  blp:{title:"Benotete Lehrprobe (BLP)", pre:[
+    "Fachbegleitende Lehrkraft muss teilnehmen (bei Krankheit Fachlehrer als Ersatz)",
+    "Zwei Entwürfe aus dem Sekretariat holen; +/- vorn auf dem Entwurf notieren",
+    "LAA Treffpunkt und Zeit mitteilen (ca. 10–15 Min.); Formular Niederschrift BLP durch FL bereitgestellt",
+    "VfA und Schule haben eine Stimme; ggf. Notenskala der fbL vorlegen"],
+   steps:["Eröffnung: Verschwiegenheit, Ablauf der Anhörung","Reflexion des LAA (ca. 10 Min.): Verhältnis Planung/Durchführung, Zielerreichung an Schülerleistungen","Stärkungsrunde: 1–2 Aspekte, ohne kritische Bemerkungen","2–3 Schwerpunkte setzen (LAA, FL, Schule) und schriftlich fixieren","Beratung (FL verantwortlich, max. 20 Min.): dialogisch, lösungsorientiert, kein Prüfungsgespräch","Abschließende Paraphrase, emotionale Entlastung, Dank","Notenfestsetzung: Planung – Durchführung – Reflexion; Vorschläge FL/Schule, Festsetzung durch Vorsitz","Bekanntgabe mit kurzer Erklärung, Kenntnisnahme, positiver Ausblick; Hinweis auf Niederschrift"]},
+  muendlich:{title:"Mündliche Prüfung", pre:[
+    "Handlungsfelder (f_240 Modus 1 bzw. f_242 Modus 2) und Variante prüfen; meist Variante 3: Theorie eines Handlungsfelds, angewendet auf die Prüfungsstunde",
+    "Formblatt f_250 Niederschrift bereithalten; zugelassene Hilfsmittel klären",
+    "Ausschuss und Funktionen feststellen; Gesundheitsfrage stellen"],
+   steps:["Eröffnung: Ablauf, Zeitrahmen, Gesprächsform, Hilfsmittel","Vortrag des LAA: Kompetenzentwicklung, Handlungssituation, Theorie-Praxis-Verknüpfung, Konsequenzen","Prüfungsgespräch: offene Impulse zu Fachlichkeit, Bildungswissenschaft, Fachdidaktik, Recht, Reflexion, Transfer","Gesprächsführung: verständlich fragen, Denkzeit geben, nicht suggestiv lenken","Beratung ohne LAA auf Grundlage des standardisierten Leistungsbilds","Notenvorschläge, Festsetzung und Verkündung; vollständige Niederschrift"]}
+};
+const FORMULIERUNGEN = [
+  ["Eröffnung","Ich begrüße Sie zur heutigen Staatsprüfung. Ich führe Sie durch den Ablauf und achte auf die ordnungsgemäße Durchführung. Bitte beachten Sie, dass die Prüfungssituation der Beurteilung und nicht länger der Beratung dient."],
+  ["Gesundheitsfrage","Fühlen Sie sich gesundheitlich in der Lage, Ihre Prüfung zu absolvieren?"],
+  ["Vor der Reflexion","Sie erhalten nun Zeit, Ihre Prüfung strukturiert zu reflektieren. Gehen Sie bitte auf Planung, Durchführung, Zielerreichung, Lernergebnisse und gegebenenfalls Abweichungen oder Alternativen ein."],
+  ["Übergang zur Beratung","Vielen Dank. Damit ist die Anhörung beendet. Wir beraten nun ohne Sie über die Prüfungsleistung."],
+  ["Verkündung","Der Prüfungsausschuss hat die Prüfungsleistung mit der Note … bewertet. Maßgeblich waren insbesondere … . Die Begründung wird in der Niederschrift festgehalten."],
+  ["Verabschiedung","Ich danke Ihnen für die Prüfung und die gezeigte Auseinandersetzung mit Ihrem professionellen Handeln. Für Ihren weiteren beruflichen Weg wünsche ich Ihnen alles Gute."]
+];
+
+/* ============================================================
+   ZUSTAND
+   ============================================================ */
+const uid = ()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36);
+const today = ()=>new Date().toISOString().slice(0,10);
+const esc = s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function defaultKB(){ return {weights:JSON.parse(JSON.stringify(DEFAULT_WEIGHTS)), questions:[], theories:[], indicators:[], docIndex:[], updated:Date.now()}; }
+function newObs(type){
+  return {id:uid(), type, variant: type==="praktisch"?"stex":"var3", created:Date.now(), updated:Date.now(),
+    meta:{laa:"",fach:"",klasse:"",datum:today(),thema:"",feld:3,pv:"",fl:"",vds:"",fbl:""},
+    phase:null, phaseAt:null, log:[], entwurf:{}, reflexion:{}, ratings:{}, theories:{},
+    props:{fl:"",vds:"",pv:"",final:""}, text:"", textEdited:false, notes:""};
+}
+const S = { kb:defaultKB(), obs:{}, docs:{}, cur:null, tab:"beobachtung", tag:null, val:"o", store:"lokal", sample:null, downloads:null, db:null, uid:null, abl:null };
+const cur = ()=>S.obs[S.cur];
+
+/* ============================================================
+   SPEICHER: privat in der Artifact-Datenbank, sonst lokal
+   ============================================================ */
+const LS="pb_v1";
+function lsGet(){ try{ return JSON.parse(localStorage.getItem(LS)||"null"); }catch(e){ return null; } }
+function lsSet(){ try{ localStorage.setItem(LS, JSON.stringify({kb:S.kb, obs:S.obs, docs:S.docs, cur:S.cur})); return true; }catch(e){ return false; } }
+const dirty = {obs:new Set(), kb:false, docs:new Set(), delObs:new Set(), delDocs:new Set()};
+let saveT=null, saving=false;
+function touch(what,id){
+  if(what==="obs"){ dirty.obs.add(id); if(S.obs[id]) S.obs[id].updated=Date.now(); }
+  if(what==="kb"){ dirty.kb=true; S.kb.updated=Date.now(); }
+  if(what==="doc") dirty.docs.add(id);
+  clearTimeout(saveT); saveT=setTimeout(flush,900);
+}
+async function flush(){
+  lsSet();
+  if(!S.db||!S.uid||saving) { setStatus(); return; }
+  saving=true;
+  const base="data/users/"+S.uid;
+  try{
+    for(const id of [...dirty.delObs]){ await S.db.doc(base+"/store/obs/"+id).delete(); dirty.delObs.delete(id); }
+    for(const id of [...dirty.delDocs]){ await S.db.doc(base+"/store/kbdocs/"+id).delete(); dirty.delDocs.delete(id); }
+    for(const id of [...dirty.obs]){ dirty.obs.delete(id); if(S.obs[id]) await S.db.doc(base+"/store/obs/"+id).set(JSON.parse(JSON.stringify(S.obs[id]))); }
+    for(const id of [...dirty.docs]){ dirty.docs.delete(id); if(S.docs[id]) await S.db.doc(base+"/store/kbdocs/"+id).set(S.docs[id]); }
+    if(dirty.kb){ dirty.kb=false; await S.db.doc(base+"/kb").set(JSON.parse(JSON.stringify(S.kb))); }
+    S.store="Datenbank (privat)";
+  }catch(e){ S.store="lokal (Datenbank nicht erreichbar)"; console.warn(e); }
+  saving=false; setStatus();
+  if(dirty.obs.size||dirty.docs.size||dirty.kb) { clearTimeout(saveT); saveT=setTimeout(flush,900); }
+}
+function setStatus(){ const el=document.getElementById("storeStatus"); if(el) el.textContent="Gespeichert: "+S.store; }
+
+async function initCaps(){
+  if(!window.claude || typeof window.claude.use!=="function") return;
+  claude.use("sample").then(s=>{ S.sample=s; render(); }).catch(()=>{});
+  claude.use("downloads").then(d=>{ S.downloads=d; }).catch(()=>{});
+  try{
+    const [db,user]=await Promise.all([claude.use("db"),claude.use("user")]);
+    if(!db||!user) return;
+    const id=await user.id(); if(!id) return;
+    S.db=db; S.uid=id;
+    const base="data/users/"+id;
+    const [kbSnap, obsSnap, docSnap] = await Promise.all([
+      db.doc(base+"/kb").get(), db.collection(base+"/store/obs").get(), db.collection(base+"/store/kbdocs").get()]);
+    const remoteEmpty = !kbSnap.exists && obsSnap.empty && docSnap.empty;
+    if(remoteEmpty){
+      // bisherige lokale Daten übernehmen
+      Object.keys(S.obs).forEach(k=>dirty.obs.add(k)); Object.keys(S.docs).forEach(k=>dirty.docs.add(k)); dirty.kb=true;
+    } else {
+      if(kbSnap.exists) S.kb=Object.assign(defaultKB(), JSON.parse(JSON.stringify(kbSnap.data())));
+      obsSnap.docs.forEach(d=>{ const o=JSON.parse(JSON.stringify(d.data())); const l=S.obs[d.id]; if(!l||(o.updated||0)>=(l.updated||0)) S.obs[d.id]=o; });
+      docSnap.docs.forEach(d=>{ S.docs[d.id]=JSON.parse(JSON.stringify(d.data())); });
+      Object.keys(S.obs).forEach(k=>{ if(!obsSnap.docs.find(d=>d.id===k)) dirty.obs.add(k); });
+    }
+    S.store="Datenbank (privat)";
+    if(!S.obs[S.cur]) S.cur=Object.keys(S.obs)[0]||null;
+    ensureCur(); render(); flush();
+  }catch(e){ console.warn("db",e); }
+}
+
+/* ============================================================
+   BERECHNUNG
+   ============================================================ */
+function profileOf(o){
+  const base=PROFILES[o.type];
+  const areas=base.areas.map(a=>({...a, items:[...a.items]}));
+  (S.kb.indicators||[]).filter(x=>x.profile===o.type).forEach(x=>{
+    const a=areas.find(a=>a.id===x.area); if(a) a.items.push({id:x.id,group:"Eigene Ergänzung",name:x.name,subj:x.subj||x.name,levels:x.levels,custom:true});
+  });
+  return {label:base.label, areas};
+}
+function weightsOf(type){ return Object.assign({}, DEFAULT_WEIGHTS[type], (S.kb.weights||{})[type]||{}); }
+function compute(o){
+  const prof=profileOf(o), w=weightsOf(o.type);
+  let sum=0, sw=0, rated=0, total=0; const areas=[]; const all=[];
+  prof.areas.forEach(a=>{
+    const r=a.items.filter(i=>o.ratings[i.id]!=null);
+    total+=a.items.length; rated+=r.length;
+    r.forEach(i=>all.push({item:i, area:a, p:o.ratings[i.id]}));
+    if(r.length){ const m=r.reduce((s,i)=>s+o.ratings[i.id],0)/r.length; areas.push({a, mean:m, n:r.length, w:w[a.id]||0}); if(w[a.id]){ sum+=m*w[a.id]; sw+=w[a.id]; } }
+    else areas.push({a, mean:null, n:0, w:w[a.id]||0});
+  });
+  const raw = sw? sum/sw : null;
+  let cap=15; const notes=[];
+  if(o.type==="praktisch"){
+    const f=o.ratings.P2, pl=areas.find(x=>x.a.id==="planung");
+    const fg=gradeOf(f);
+    if((fg&&fg.n>=4) || (pl&&pl.mean!=null&&pl.mean<8)){ cap=10; notes.push("Der Entwurf weist deutliche Mängel auf: Sehr gute Noten sind ausgeschlossen, gute nur im absoluten Ausnahmefall. Der Vorschlag wird auf 10 Punkte begrenzt; im begründeten Ausnahmefall manuell anpassen."); }
+    else if(fg&&fg.n===3){ cap=13; notes.push("Der Entwurf erfüllt die formalen Vorgaben nicht vollständig: Eine sehr gute Bewertung ist ausgeschlossen (Vorschlag max. 13 Punkte)."); }
+    const nach=o.reflexion&&o.reflexion.keine_nach==="nein";
+    if(nach) notes.push("Die Reflexion war überwiegend Nacherzählung – das spricht gegen obere Notenstufen im Bereich Reflexion.");
+  }
+  const weak=all.filter(x=>gradeOf(x.p).n>=5);
+  if(weak.length) notes.push("Mindestens ein Indikator liegt im Bereich mangelhaft/ungenügend ("+weak.map(x=>x.item.name).join(", ")+"). Bei einer Gesamtnote 5 oder 6 das gesonderte Verfahren beachten.");
+  let pts = raw==null? null : Math.min(Math.round(raw), cap);
+  const capped = raw!=null && Math.round(raw)>cap;
+  return {prof, areas, raw, pts, cap, capped, notes, rated, total, all};
+}
+
+function sentence(item, p){
+  const g=gradeOf(p); const lv=item.levels[g.n-1]||"";
+  let s = item.subj? item.subj+" "+lv : lv;
+  s=s.charAt(0).toUpperCase()+s.slice(1);
+  return s.replace(/\s+/g," ").trim()+".";
+}
+function buildText(o){
+  const r=compute(o); const m=o.meta;
+  if(r.pts==null) return "Noch keine Indikatoren bewertet.";
+  const g=gradeOf(r.pts);
+  const head = (o.type==="praktisch"?(o.variant==="blp"?"Benotete Lehrprobe":"Praktische Prüfung (Prüfungslehrprobe)"):"Mündliche Prüfung")
+    + (m.laa?" – "+m.laa:"") + (m.fach?", "+m.fach:"") + (m.klasse?", Klasse "+m.klasse:"") + (m.datum?", "+fmtDate(m.datum):"");
+  const L=[head];
+  if(m.thema) L.push((o.type==="praktisch"?"Thema der Stunde: ":"Handlungssituation: ")+m.thema);
+  if(o.type==="muendlich"){ const f=FELDER.find(f=>f.n==m.feld); if(f) L.push("Handlungsfeld: "+f.name); }
+  L.push("");
+  L.push("Bewertungsvorschlag: "+r.pts+" Punkte – „"+g.name+"“, eine Leistung, die "+g.txt+".");
+  if(r.capped) L.push("(Rechnerisch "+Math.round(r.raw)+" Punkte; begrenzt wegen der Mängel im Entwurf.)");
+  L.push("");
+  r.areas.forEach(x=>{
+    if(x.mean==null) return;
+    const ag=gradeOf(x.mean);
+    L.push(x.a.name+" (Teilbewertung „"+ag.name+"“, Ø "+x.mean.toFixed(1).replace(".",",")+" Punkte):");
+    x.a.items.filter(i=>o.ratings[i.id]!=null).forEach(i=>L.push("– "+sentence(i,o.ratings[i.id])));
+    L.push("");
+  });
+  const sorted=[...r.all].sort((a,b)=>b.p-a.p);
+  if(sorted.length>=3 && sorted[0].p!==sorted[sorted.length-1].p){
+    const top=sorted.slice(0,2), low=sorted.slice(-2).reverse();
+    L.push("Stärken: "+top.map(x=>x.item.name).join("; ")+".");
+    L.push("Entwicklungsfelder: "+low.map(x=>x.item.name).join("; ")+".");
+    L.push("");
+  }
+  const strong=sorted.slice(0,2).map(x=>x.item.name).join(" sowie ");
+  L.push("Formulierung für die Verkündung:");
+  L.push("„Der Prüfungsausschuss hat die Prüfungsleistung mit der Note „"+g.name+"“ ("+r.pts+" Punkte) bewertet. Maßgeblich waren insbesondere "+(strong||"…")+
+    (sorted.length>=3?"; Entwicklungspotenzial zeigt sich vor allem bei "+sorted[sorted.length-1].item.name:"")+". Die Begründung wird in der Niederschrift festgehalten.“");
+  return L.join("\n");
+}
+function fmtDate(d){ if(!d) return ""; const [y,mo,da]=d.split("-"); return da+"."+mo+"."+y; }
+function fmtTime(ts){ const d=new Date(ts); return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); }
+
+/* ============================================================
+   DARSTELLUNG
+   ============================================================ */
+const TABS=[["beobachtung","Beobachtung"],["bewertung","Bewertung"],["ablauf","Ablauf & Fragen"],["wissen","Wissensbasis"],["archiv","Archiv"]];
+const main=document.getElementById("main");
+
+function ensureCur(){
+  if(!S.cur||!S.obs[S.cur]){ const o=newObs("praktisch"); S.obs[o.id]=o; S.cur=o.id; touch("obs",o.id); }
+}
+function obsLabel(o){ const t=o.type==="praktisch"?(o.variant==="blp"?"BLP":"Praktische Prüfung"):"Mündliche Prüfung"; return t+(o.meta.laa?" – "+o.meta.laa:"")+" ("+fmtDate(o.meta.datum)+")"; }
+
+function render(){
+  ensureCur();
+  const sel=document.getElementById("curSel");
+  sel.innerHTML=Object.values(S.obs).sort((a,b)=>b.created-a.created).map(o=>`<option value="${o.id}" ${o.id===S.cur?"selected":""}>${esc(obsLabel(o))}</option>`).join("");
+  document.getElementById("tabs").innerHTML=TABS.map(([id,n])=>`<button role="tab" aria-selected="${S.tab===id}" data-action="tab" data-tab="${id}">${n}</button>`).join("");
+  const fn={beobachtung:viewObs,bewertung:viewRate,ablauf:viewAblauf,wissen:viewKB,archiv:viewArchiv}[S.tab];
+  main.innerHTML=fn();
+  renderScale();
+  tick();
+  setStatus();
+}
+
+function renderScale(){
+  const o=cur(); const r=compute(o);
+  const read=document.getElementById("scaleRead"), mk=document.getElementById("marker");
+  if(r.pts==null){ read.innerHTML=`<span class="muted small">Noch kein Vorschlag – Indikatoren in „Bewertung“ einstufen</span>`; mk.style.display="none"; return; }
+  const g=gradeOf(r.pts);
+  read.innerHTML=`<b>${r.pts}</b><span class="small">Punkte</span><span><strong>${g.name}</strong></span>${r.capped?'<span class="small" style="color:var(--warn)">begrenzt</span>':""}`;
+  mk.style.display="block"; mk.className="marker"+(r.capped?" cap":"");
+  const pos=(Math.min(15,Math.max(0,r.raw==null?r.pts:Math.min(r.raw,r.cap)))+0.5)/16*100;
+  mk.style.left=pos+"%";
+}
+
+function head(o){
+  const m=o.meta;
+  const isP=o.type==="praktisch";
+  return `<section class="panel">
+    <div class="row"><h2>${isP?"Lehrprobe / praktische Prüfung":"Mündliche Prüfung"}</h2><span class="spacer"></span>
+      ${isP?`<label class="f" style="flex-direction:row;align-items:center;gap:8px">Art
+        <select data-bind="variant"><option value="stex" ${o.variant==="stex"?"selected":""}>Staatsprüfung (Beurteilung)</option><option value="blp" ${o.variant==="blp"?"selected":""}>Benotete Lehrprobe (Beratung)</option></select></label>`:""}
+    </div>
+    <div class="fields">
+      <label class="f">Lehramtsanwärter/in<input type="text" data-bind="meta.laa" value="${esc(m.laa)}"></label>
+      <label class="f">Fach<input type="text" data-bind="meta.fach" value="${esc(m.fach)}"></label>
+      ${isP?`<label class="f">Klasse<input type="text" data-bind="meta.klasse" value="${esc(m.klasse)}"></label>`:
+        `<label class="f">Handlungsfeld<select data-bind="meta.feld" data-num="1">${FELDER.map(f=>`<option value="${f.n}" ${f.n==m.feld?"selected":""}>${f.n}. ${esc(f.name)}</option>`).join("")}</select></label>`}
+      <label class="f">Datum<input type="date" data-bind="meta.datum" value="${esc(m.datum)}"></label>
+      <label class="f" style="grid-column:span 2">${isP?"Thema der Stunde":"Handlungssituation / Bezug zur Prüfungsstunde"}<input type="text" data-bind="meta.thema" value="${esc(m.thema)}"></label>
+    </div>
+    <details style="margin-top:10px"><summary>Prüfungsausschuss</summary>
+      <div class="fields">
+        <label class="f">Prüfungsvorsitz<input type="text" data-bind="meta.pv" value="${esc(m.pv)}"></label>
+        <label class="f">Fachleiter/in<input type="text" data-bind="meta.fl" value="${esc(m.fl)}"></label>
+        <label class="f">Vertreter/in der Schule / VfA<input type="text" data-bind="meta.vds" value="${esc(m.vds)}"></label>
+        <label class="f">Fachbegleitende Lehrkraft (beratend)<input type="text" data-bind="meta.fbl" value="${esc(m.fbl)}"></label>
+      </div>
+      <p class="small muted">Ausschuss: PV, FL1, FL2 und VdS anwesend. Unterausschuss: PV, ein FL und VdS. Die fachbegleitende Lehrkraft hat in der Staatsprüfung kein Notenvorschlagsrecht.</p>
+    </details>
+  </section>`;
+}
+
+function viewObs(){
+  const o=cur(); const isP=o.type==="praktisch";
+  const ph=PHASES[o.type];
+  const tags=TAGS[o.type];
+  const tagsHtml=tags.map(([l,ind])=>`<button class="chip" data-action="tag" data-tag="${esc(l)}" aria-pressed="${S.tag===l}">${esc(l)}</button>`).join("");
+  const log=[...o.log].reverse().map(e=>`<li><time>${fmtTime(e.t)}</time><span class="v ${e.v==="+"?"p":e.v==="-"?"m":"o"}">${e.v==="+"?"+":e.v==="-"?"–":"·"}</span>
+    <span>${esc(e.text)}<span class="meta">${esc(phaseName(o,e.phase))}${e.tag?" – "+esc(e.tag):""}</span></span>
+    <button data-action="delLog" data-id="${e.id}" aria-label="Notiz löschen">✕</button></li>`).join("");
+  let side="";
+  if(isP){
+    side=`<section class="panel"><h3>Entwurf prüfen</h3><p>Formale und inhaltliche Vorgaben. Das Ergebnis fließt als Hinweis in die Bewertung ein.</p>
+      <ul class="checks">${ENTWURF_CHECKS.map(([k,t,h])=>triRow("entwurf",k,t,h,o.entwurf[k])).join("")}</ul>
+      <label class="f" style="margin-top:10px">Entwurf: + / –<textarea data-bind="entwurfNotiz" placeholder="Stärken und Mängel des Entwurfs">${esc(o.entwurfNotiz||"")}</textarea></label>
+      </section>
+      <section class="panel"><h3>Reflexion des LAA</h3><p>Was hat die Reflexion abgedeckt?</p>
+      <ul class="checks">${REFLEXION_CHECKS.map(([k,t,h])=>triRow("reflexion",k,t,h,o.reflexion[k])).join("")}</ul></section>`;
+  } else {
+    const f=FELDER.find(f=>f.n==o.meta.feld)||FELDER[0];
+    const extra=(S.kb.theories||[]).filter(t=>t.feld==f.n).map(t=>[t.name,t.kern,true]);
+    const list=[...f.th,...extra];
+    const maxSt=Math.max(0,...Object.values(o.theories||{}));
+    side=`<section class="panel"><h3>Theorie-Tracker: ${esc(f.name)}</h3><p>${esc(f.leit)}</p>
+      <p class="small muted">Genannte Theorie antippen und die erreichte Stufe wählen: 1 ${STUFEN[0]}, 2 ${STUFEN[1]}, 3 ${STUFEN[2]}, 4 ${STUFEN[3]}.</p>
+      <div class="theories">${list.map(([n,k,c])=>{ const st=(o.theories||{})[thKey(n)]||0;
+        return `<div class="th"><span><b>${esc(n)}</b>${c?'<span class="tag">eigene</span>':""}<span class="k">${esc(k)}</span></span>
+        <span class="stufe" role="group" aria-label="Stufe für ${esc(n)}">${[1,2,3,4].map(s=>`<button data-action="stufe" data-th="${esc(n)}" data-s="${s}" aria-pressed="${st===s}" title="${STUFEN[s-1]}">${s}</button>`).join("")}</span></div>`;}).join("")}</div>
+      ${maxSt?`<div class="note info">Höchste beobachtete Stufe: <b>${STUFEN[maxSt-1]}</b>. Orientierung für „theoriegeleitete Betrachtung“ und „Praxisreflexion“: Stufe 4 spricht für den oberen, Stufe 1 für den unteren Bereich – ausschlaggebend bleibt das Leistungsbild.</div>`:""}
+      </section>
+      <section class="panel"><h3>Impulse für das Prüfungsgespräch</h3><p>Offen fragen, Denkzeit geben, nicht suggestiv lenken.</p>
+        <ul class="qlist">${f.imp.concat((S.kb.questions||[]).filter(q=>q.mode==="muendlich").map(q=>q.text)).map(q=>`<li><span>${esc(q)}</span><button class="btn sm" data-action="logQ" data-q="${esc(q)}">Notieren</button></li>`).join("")}</ul></section>`;
+  }
+  const phaseObj=ph.find(p=>p.id===o.phase);
+  return head(o)+`<div class="grid2" style="margin-top:18px">
+    <div>
+      <section class="panel">
+        <div class="row"><h3>Phase und Zeit</h3><span class="spacer"></span><span class="status" id="storeStatus"></span></div>
+        <div class="phases" role="group" aria-label="Phase">${ph.map(p=>`<button class="phase" data-action="phase" data-ph="${p.id}" aria-pressed="${o.phase===p.id}">${p.name}</button>`).join("")}</div>
+        <div class="row"><div class="timer" id="timer">0:00</div><div class="timer-target" id="timerTarget">${phaseObj?(phaseObj.hint||(phaseObj.target?"Richtwert "+phaseObj.target+" Min.":"")):"Phase wählen, um die Zeit zu starten"}</div></div>
+      </section>
+      <section class="panel">
+        <h3>Beobachtung notieren</h3>
+        <p>Stichwort wählen, Wertung setzen, kurz notieren und mit Enter speichern. Stichworte ordnen die Notiz einem Indikator des Leistungsbilds zu.</p>
+        <div class="chips" role="group" aria-label="Stichworte">${tagsHtml}</div>
+        <div class="row">
+          <span class="val" role="group" aria-label="Wertung">${["+","o","-"].map(v=>`<button data-action="val" data-v="${v}" aria-pressed="${S.val===v}" aria-label="${v==="+"?"positiv":v==="-"?"kritisch":"neutral"}">${v==="+"?"+":v==="-"?"–":"·"}</button>`).join("")}</span>
+          <input type="text" id="noteIn" placeholder="${isP?"z. B. Einstieg mit Alltagsbezug, Schüler sofort aktiv":"z. B. verbindet Deci & Ryan schlüssig mit der Gruppenphase"}" style="flex:1;min-width:200px">
+          <button class="btn primary" data-action="addLog">Notieren</button>
+        </div>
+        <ul class="log">${log||'<li style="display:block" class="muted small">Noch keine Notizen.</li>'}</ul>
+      </section>
+      <section class="panel"><h3>Freie Notizen</h3><textarea data-bind="notes" placeholder="Schwerpunkte, offene Fragen, Absprachen">${esc(o.notes)}</textarea></section>
+    </div>
+    <div>${side}</div>
+  </div>`;
+}
+function triRow(group,k,t,h,v){
+  return `<li class="tri-row"><span>${esc(t)}${h?`<span class="hint">${esc(h)}</span>`:""}</span><span class="tri" role="group" aria-label="${esc(t)}">${["ja","teils","nein"].map(x=>`<button data-action="tri" data-g="${group}" data-k="${k}" data-v="${x}" aria-pressed="${v===x}">${x}</button>`).join("")}</span></li>`;
+}
+function phaseName(o,id){ const p=PHASES[o.type].find(p=>p.id===id); return p?p.name:"ohne Phase"; }
+
+function viewRate(){
+  const o=cur(); const r=compute(o); const w=weightsOf(o.type);
+  const tagMap={}; TAGS[o.type].forEach(([l,ind])=>tagMap[l]=ind);
+  const areas=r.prof.areas.map(a=>{
+    let lastGroup=null;
+    const items=a.items.map(i=>{
+      const p=o.ratings[i.id]; const g=gradeOf(p);
+      const grp = i.group&&i.group!==lastGroup? `<div class="subgroup">${esc(i.group)}</div>`:""; lastGroup=i.group;
+      const ev=o.log.filter(e=>e.tag&&tagMap[e.tag]===i.id);
+      return grp+`<div class="ind" id="ind-${i.id}">
+        <div class="ind-head"><span class="ind-name">${esc(i.name)}</span><span class="ind-pts">${p!=null?p+" P":"–"}</span></div>
+        <div class="seg" role="group" aria-label="${esc(i.name)}">${GRADES.map(G=>`<button data-action="rate" data-id="${i.id}" data-g="${G.n}" aria-pressed="${g&&g.n===G.n}" title="${esc(i.levels[G.n-1])}" data-desc="${esc(i.levels[G.n-1])}">${G.n}</button>`).join("")}
+          <button class="skip" data-action="rate" data-id="${i.id}" data-g="0" title="nicht bewertet">–</button></div>
+        <p class="desc ${p!=null?"on":""}" id="desc-${i.id}">${p!=null?"„"+esc(i.levels[g.n-1])+"“":"Stufe wählen – die Beschreibung aus dem Leistungsbild erscheint hier."}</p>
+        ${p!=null?`<div class="fine"><span>Feinjustierung</span><input type="range" min="${g.min}" max="${g.max}" step="1" value="${p}" data-action="fine" data-id="${i.id}" aria-label="Punkte für ${esc(i.name)}"><span>${g.min}–${g.max}</span></div>`:""}
+        ${ev.length?`<div class="evid">${ev.map(e=>`<span class="${e.v==="+"?"p":e.v==="-"?"m":""}">${fmtTime(e.t)} ${esc(e.text)}</span>`).join("")}</div>`:""}
+      </div>`;
+    }).join("");
+    const ar=r.areas.find(x=>x.a.id===a.id);
+    return `<div class="area"><div class="area-head"><h3>${esc(a.name)}</h3><span class="w">Gewicht ${w[a.id]||0} %${ar&&ar.mean!=null?" – Ø "+ar.mean.toFixed(1).replace(".",",")+" P":""}</span></div>${items}</div>`;
+  }).join("");
+
+  const g=r.pts!=null?gradeOf(r.pts):null;
+  if(!o.textEdited) o.text=buildText(o);
+  const props=o.props;
+  return `<div class="grid2">
+    <section class="panel">
+      <h2>Standardisiertes Leistungsbild – ${esc(r.prof.label)}</h2>
+      <p>Stufe je Indikator wählen. Die Punkte werden je Bereich gemittelt und nach den Gewichten verrechnet. ${o.type==="praktisch"?"Unterricht und Reflexion haben Vorrang vor dem Entwurf.":"Zählt: die schlüssige Verbindung von Theorie, Recht, Kommunikation, Lehrerhandeln und eigener Entwicklung."}</p>
+      <p class="small muted">${r.rated} von ${r.total} Indikatoren bewertet. Notizen mit passendem Stichwort erscheinen unter dem jeweiligen Indikator.</p>
+      ${areas}
+    </section>
+    <div class="sticky">
+      <section class="panel">
+        <h3>Bewertungsvorschlag</h3>
+        ${g?`<div class="row" style="align-items:flex-end;margin-top:8px"><div class="big">${r.pts}<small> Punkte</small></div><div class="gname" style="color:var(--g${g.n})">${g.name}</div></div>
+          <p class="small muted">Rechnerisch ${r.raw.toFixed(2).replace(".",",")} Punkte</p>`:`<p class="muted">Noch keine Einstufung.</p>`}
+        <ul class="arealist">${r.areas.map(x=>`<li><span>${esc(x.a.name)} <span class="muted small">(${x.w} %)</span></span><span>${x.mean!=null?x.mean.toFixed(1).replace(".",",")+" P – "+gradeOf(x.mean).name:"–"}</span></li>`).join("")}</ul>
+        ${r.notes.map(n=>`<div class="note">${esc(n)}</div>`).join("")}
+      </section>
+      <section class="panel">
+        <h3>Notenvorschläge im Ausschuss</h3>
+        <p>Reihenfolge als Verfahrenshilfe: zuerst Fachleiter, dann Schule, zuletzt der Vorsitz.</p>
+        <div class="props">
+          <label for="pfl"><span class="ord">1</span>Fachleiter/in</label><input id="pfl" type="number" min="0" max="15" data-bind="props.fl" value="${esc(props.fl)}" placeholder="P">
+          <label for="pvds"><span class="ord">2</span>Schule / VfA</label><input id="pvds" type="number" min="0" max="15" data-bind="props.vds" value="${esc(props.vds)}" placeholder="P">
+          <label for="ppv"><span class="ord">3</span>Vorsitz</label><input id="ppv" type="number" min="0" max="15" data-bind="props.pv" value="${esc(props.pv)}" placeholder="${r.pts??"P"}">
+          <label for="pfin"><b>Festgesetzt</b></label><input id="pfin" type="number" min="0" max="15" data-bind="props.final" value="${esc(props.final)}" placeholder="P">
+        </div>
+        <p class="small muted" id="propInfo">${propInfo(o)}</p>
+        <div class="row" style="margin-top:8px"><button class="btn sm" data-action="takeProposal" ${r.pts==null?"disabled":""}>Vorschlag als eigenen übernehmen</button></div>
+      </section>
+    </div>
+  </div>
+  <section class="panel" style="margin-top:18px">
+    <div class="row"><h3>Begründung für die Niederschrift</h3><span class="spacer"></span>
+      ${o.textEdited?`<button class="btn sm" data-action="regen">Neu aus Bewertung erzeugen</button>`:""}
+      ${S.sample?`<button class="btn sm primary" data-action="aiText">Mit Claude ausformulieren</button>`:""}
+      <button class="btn sm" data-action="copyText">Kopieren</button>
+      <button class="btn sm" data-action="exportObs">Als Datei speichern</button>
+    </div>
+    <p>Aus den Formulierungen des Leistungsbilds zusammengesetzt; frei bearbeitbar. Nach einer Bearbeitung wird der Text nicht mehr automatisch überschrieben.</p>
+    <textarea id="textOut" data-bind="text" style="min-height:300px">${esc(o.text)}</textarea>
+    <p class="small muted" id="aiState"></p>
+  </section>`;
+}
+function propInfo(o){
+  const p=o.props; const vals=[p.fl,p.vds,p.pv].filter(v=>v!==""&&v!=null).map(Number);
+  if(!vals.length) return "Noch keine Vorschläge eingetragen.";
+  const avg=vals.reduce((a,b)=>a+b,0)/vals.length; const spread=Math.max(...vals)-Math.min(...vals);
+  let s="Mittel der Vorschläge: "+avg.toFixed(1).replace(".",",")+" P ("+gradeOf(avg).name+").";
+  if(spread>=3) s+=" Abweichung von "+spread+" Punkten – Begründungen kriterienbezogen abgleichen.";
+  if(p.final!==""&&p.final!=null) s+=" Festgesetzt: "+p.final+" P – „"+gradeOf(Number(p.final)).name+"“.";
+  return s;
+}
+
+function viewAblauf(){
+  const o=cur();
+  const key=S.abl|| (o.type==="muendlich"?"muendlich":o.variant==="blp"?"blp":"stex");
+  const A=ABLAUF[key];
+  const done=(o.ablaufDone||{})[key]||{};
+  const extraQ=(S.kb.questions||[]).filter(q=>key==="muendlich"?q.mode==="muendlich":q.mode===key);
+  const qs=QUESTIONS.filter(q=>key==="muendlich"?false:q.mode===key);
+  return `<div class="row" style="margin-bottom:14px">${Object.entries(ABLAUF).map(([k,v])=>`<button class="phase" data-action="abl" data-k="${k}" aria-pressed="${k===key}">${v.title}</button>`).join("")}</div>
+  <div class="grid-half">
+    <section class="panel"><h2>${A.title}: Ablauf für den Vorsitz</h2>
+      <h3 style="margin-top:14px">Vor Beginn</h3>
+      <ul class="checks">${A.pre.map((t,i)=>`<li><label><input type="checkbox" data-action="ablDone" data-k="${key}" data-i="pre${i}" ${done["pre"+i]?"checked":""}><span>${esc(t)}</span></label></li>`).join("")}</ul>
+      <h3 style="margin-top:14px">Durchführung</h3>
+      <ol class="steps">${A.steps.map((t,i)=>`<li class="${done["s"+i]?"done":""}"><label style="display:flex;gap:8px;cursor:pointer"><input type="checkbox" data-action="ablDone" data-k="${key}" data-i="s${i}" ${done["s"+i]?"checked":""} style="accent-color:var(--accent)"><span>${esc(t)}</span></label></li>`).join("")}</ol>
+      ${key!=="blp"?`<div class="note info">Staatsprüfung: Beurteilungs-, keine Beratungssituation. Bewertet wird nur die gezeigte Prüfungsleistung – keine früheren Beobachtungen oder persönlichen Eindrücke.</div>`:`<div class="note info">BLP: Der beratende Charakter steht im Vordergrund. Anhörung und Beratung zusammen ca. 45 Minuten.</div>`}
+      <h3 style="margin-top:16px">Dokumentation</h3>
+      <p class="small">${key==="muendlich"?"f_250 Niederschrift Mündliche Prüfung":"f_230 Niederschrift Prüfungslehrprobe"} während oder unmittelbar nach der Prüfung vervollständigen, Unterschriften der Kommission und Kenntnisnahme des Prüflings einholen, Unterlagen an das Sekretariat übergeben.</p>
+    </section>
+    <div>
+      <section class="panel"><h2>Formulierungen</h2>
+        ${FORMULIERUNGEN.map(([t,q])=>`<div class="quote"><b>${t}</b>„${esc(q)}“</div>`).join("")}
+      </section>
+      <section class="panel"><h2>${key==="stex"?"Verständnisfragen":key==="blp"?"Beratungsfragen":"Impulse"}</h2>
+        <p>${key==="stex"?"Komplexe, offene Fragen zum Abgleich von Planung, Durchführung und Lernergebnissen.":key==="blp"?"Dialogisch und lösungsorientiert, den gesetzten Schwerpunkten untergeordnet.":"Die Impulse zum gewählten Handlungsfeld stehen im Reiter „Beobachtung“."}</p>
+        ${qs.map(c=>`<h3 style="margin-top:10px">${esc(c.cat)}</h3><ul class="qlist">${c.items.map(q=>`<li><span>${esc(q)}</span><button class="btn sm" data-action="logQ" data-q="${esc(q)}">Notieren</button></li>`).join("")}</ul>`).join("")}
+        ${extraQ.length?`<h3 style="margin-top:10px">Eigene Fragen</h3><ul class="qlist">${extraQ.map(q=>`<li><span>${esc(q.text)}</span><button class="btn sm" data-action="logQ" data-q="${esc(q.text)}">Notieren</button></li>`).join("")}</ul>`:""}
+      </section>
+    </div>
+  </div>
+  <section class="panel" style="margin-top:18px"><h2>Wertende Adjektive zur standardisierten Bewertung</h2>
+    <div class="tablewrap"><table class="adj"><tr>${GRADES.map(g=>`<th style="color:var(--g${g.n})">${g.name} (${g.n})<br><span class="muted small">${g.max}–${g.min} P</span></th>`).join("")}</tr>
+    <tr>${GRADES.map(g=>`<td>${esc(ADJ[g.n])}</td>`).join("")}</tr></table></div>
+  </section>`;
+}
+
+function viewKB(){
+  const kb=S.kb; const docs=Object.values(S.docs).sort((a,b)=>b.added-a.added);
+  const w=kb.weights;
+  return `<div class="grid-half">
+    <div>
+      <section class="panel"><h2>Dokumente</h2>
+        <p>Weitere Unterlagen hinzufügen: Text einfügen oder Datei laden (PDF, TXT, MD, JSON). Markierte Dokumente fließen in die von Claude ausformulierte Begründung ein.</p>
+        <label class="f">Titel<input type="text" id="docTitle" placeholder="z. B. Hinweise Fachseminar Deutsch"></label>
+        <label class="f" style="margin-top:8px">Text<textarea id="docText" placeholder="Inhalt hier einfügen …"></textarea></label>
+        <div class="row" style="margin-top:8px"><button class="btn primary" data-action="addDoc">Dokument speichern</button><button class="btn" data-action="pickFile">Datei laden</button><span class="small muted" id="fileState"></span></div>
+        <ul class="docs">${docs.map(d=>`<li><span><b>${esc(d.title)}</b><span class="tag">${Math.round((d.text||"").length/1000)} Tsd. Zeichen</span><br>
+          <label class="small muted"><input type="checkbox" data-action="docUse" data-id="${d.id}" ${d.use?"checked":""} style="accent-color:var(--accent)"> für Begründungen nutzen</label></span>
+          <span class="row">${S.sample?`<button class="btn sm" data-action="aiExtract" data-id="${d.id}">Auswerten</button>`:""}<button class="btn sm" data-action="viewDoc" data-id="${d.id}">Ansehen</button><button class="btn sm danger" data-action="delDoc" data-id="${d.id}">Löschen</button></span></li>`).join("")||'<li class="muted small" style="display:block">Noch keine eigenen Dokumente. Leitfaden, Hinweise zu BLP/STEX, Leistungsbilder und Prüfungskompendium sind bereits eingebaut.</li>'}</ul>
+        <div id="docView"></div>
+        <div id="extractOut"></div>
+      </section>
+      ${S.sample?`<section class="panel"><h2>Frage an die Unterlagen</h2><p>Claude antwortet auf Grundlage der eingebauten Grundlagen und Ihrer markierten Dokumente.</p>
+        <textarea id="askIn" placeholder="z. B. Was gilt, wenn der Entwurf zu spät eingegangen ist?"></textarea>
+        <div class="row" style="margin-top:8px"><button class="btn primary" data-action="aiAsk">Fragen</button></div><div id="askOut" class="out" style="margin-top:10px;display:none"></div></section>`:""}
+    </div>
+    <div>
+      <section class="panel"><h2>Eigene Ergänzungen</h2>
+        <h3 style="margin-top:10px">Frage hinzufügen</h3>
+        <div class="row"><select id="qMode" style="max-width:190px"><option value="stex">Verständnisfrage STEX</option><option value="blp">Beratungsfrage BLP</option><option value="muendlich">Impuls mündlich</option></select>
+          <input type="text" id="qText" placeholder="Frage" style="flex:1;min-width:180px"><button class="btn" data-action="addQ">Hinzufügen</button></div>
+        <ul class="qlist">${(kb.questions||[]).map(q=>`<li><span>${esc(q.text)} <span class="tag">${q.mode}</span></span><button class="btn sm danger" data-action="delQ" data-id="${q.id}">Löschen</button></li>`).join("")}</ul>
+        <h3 style="margin-top:14px">Theorie hinzufügen</h3>
+        <div class="row"><select id="tFeld" style="max-width:220px">${FELDER.map(f=>`<option value="${f.n}">${f.n}. ${esc(f.name)}</option>`).join("")}</select>
+          <input type="text" id="tName" placeholder="Name, z. B. Kounin" style="flex:1;min-width:140px"></div>
+        <div class="row" style="margin-top:6px"><input type="text" id="tKern" placeholder="Kernidee" style="flex:1"><button class="btn" data-action="addT">Hinzufügen</button></div>
+        <ul class="qlist">${(kb.theories||[]).map(t=>`<li><span>${esc(t.name)} <span class="tag">Feld ${t.feld}</span><br><span class="small muted">${esc(t.kern)}</span></span><button class="btn sm danger" data-action="delT" data-id="${t.id}">Löschen</button></li>`).join("")}</ul>
+        <h3 style="margin-top:14px">Indikator zum Leistungsbild hinzufügen</h3>
+        <div class="row"><select id="iProf" style="max-width:200px"><option value="praktisch">Praktische Prüfung</option><option value="muendlich">Mündliche Prüfung</option></select>
+          <select id="iArea" style="max-width:200px">${areaOptions("praktisch")}</select></div>
+        <input type="text" id="iName" placeholder="Indikator, z. B. Einsatz digitaler Medien" style="margin-top:6px">
+        <input type="text" id="iSubj" placeholder="Satzanfang für die Begründung, z. B. Der Einsatz digitaler Medien" style="margin-top:6px">
+        ${GRADES.map(g=>`<input type="text" class="iLv" placeholder="${g.n} – ${g.name}: z. B. ${["wird optimal umgesetzt","wird gelungen umgesetzt","wird zweckmäßig umgesetzt","wird ansatzweise umgesetzt","wird kaum umgesetzt","wird nicht umgesetzt"][g.n-1]}" style="margin-top:6px">`).join("")}
+        <div class="row" style="margin-top:8px"><button class="btn" data-action="addI">Indikator hinzufügen</button></div>
+        <ul class="qlist">${(kb.indicators||[]).map(x=>`<li><span>${esc(x.name)} <span class="tag">${x.profile==="praktisch"?"praktisch":"mündlich"} / ${esc(x.area)}</span></span><button class="btn sm danger" data-action="delI" data-id="${x.id}">Löschen</button></li>`).join("")}</ul>
+      </section>
+      <section class="panel"><h2>Gewichtung der Bereiche</h2><p>Prozentanteile für den Bewertungsvorschlag. Die Summe muss nicht 100 ergeben; es wird anteilig gerechnet.</p>
+        ${["praktisch","muendlich"].map(t=>`<h3 style="margin-top:10px">${PROFILES[t].label}</h3><div class="fields">${PROFILES[t].areas.map(a=>`<label class="f">${esc(a.name)}<input type="number" min="0" max="100" data-wt="${t}.${a.id}" value="${w[t]?.[a.id]??DEFAULT_WEIGHTS[t][a.id]}"></label>`).join("")}</div>`).join("")}
+        <div class="row" style="margin-top:10px"><button class="btn sm" data-action="resetW">Standard wiederherstellen</button></div>
+      </section>
+      <section class="panel"><h2>Sichern und übertragen</h2><p>Wissensbasis und alle Beobachtungen als JSON-Datei exportieren oder auf einem anderen Gerät importieren. Import ergänzt vorhandene Daten.</p>
+        ${S.db?"":`<div class="note">Die Daten liegen nur in diesem Browser auf diesem Gerät. Werden Browserdaten gelöscht, sind sie weg – exportieren Sie regelmäßig.</div>`}
+        <div class="row"><button class="btn" data-action="exportAll">Alles exportieren</button><button class="btn" data-action="importAll">Importieren</button></div>
+        <p class="small muted" id="storeStatus"></p>
+      </section>
+    </div>
+  </div>`;
+}
+function areaOptions(t){ return PROFILES[t].areas.map(a=>`<option value="${a.id}">${esc(a.name)}</option>`).join(""); }
+
+function viewArchiv(){
+  const list=Object.values(S.obs).sort((a,b)=>(b.meta.datum||"").localeCompare(a.meta.datum||"")||b.created-a.created);
+  return `<section class="panel"><h2>Archiv</h2><p>Alle gespeicherten Beobachtungen. Nach Abschluss eines Prüfungsverfahrens personenbezogene Daten löschen.</p>
+    ${list.length?`<div class="tablewrap"><table class="adj" style="margin-top:10px"><tr><th>Datum</th><th>Art</th><th>LAA</th><th>Fach</th><th>Vorschlag</th><th>Festgesetzt</th><th></th></tr>
+    ${list.map(o=>{const r=compute(o); return `<tr><td>${fmtDate(o.meta.datum)}</td><td>${o.type==="praktisch"?(o.variant==="blp"?"BLP":"Praktische Prüfung"):"Mündlich"}</td><td>${esc(o.meta.laa)}</td><td>${esc(o.meta.fach)}</td>
+      <td>${r.pts!=null?r.pts+" P – "+gradeOf(r.pts).name:"–"}</td><td>${o.props.final!==""&&o.props.final!=null?o.props.final+" P":"–"}</td>
+      <td><div class="row"><button class="btn sm" data-action="open" data-id="${o.id}">Öffnen</button><button class="btn sm" data-action="dup" data-id="${o.id}">Als Vorlage</button><button class="btn sm danger" data-action="delObs" data-id="${o.id}">Löschen</button></div></td></tr>`;}).join("")}</table></div>`:`<div class="empty">Noch keine Beobachtungen.</div>`}
+  </section>`;
+}
+
+/* ============================================================
+   TIMER
+   ============================================================ */
+function tick(){
+  const el=document.getElementById("timer"); if(!el) return;
+  const o=cur(); if(!o.phaseAt){ el.textContent="0:00"; el.classList.remove("over"); return; }
+  const s=Math.floor((Date.now()-o.phaseAt)/1000); const m=Math.floor(s/60);
+  el.textContent=m+":"+String(s%60).padStart(2,"0");
+  const p=PHASES[o.type].find(p=>p.id===o.phase);
+  el.classList.toggle("over", !!(p&&p.target&&m>=p.target));
+}
+setInterval(tick,1000);
+
+/* ============================================================
+   INTERAKTION
+   ============================================================ */
+function toast(t){ const el=document.getElementById("toast"); el.textContent=t; el.classList.add("on"); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove("on"),1800); }
+function setPath(obj,path,val){ const k=path.split("."); let o=obj; for(let i=0;i<k.length-1;i++){ o[k[i]]=o[k[i]]||{}; o=o[k[i]]; } o[k[k.length-1]]=val; }
+
+document.getElementById("curSel").addEventListener("change",e=>{ S.cur=e.target.value; lsSet(); render(); });
+
+document.addEventListener("input",e=>{
+  const t=e.target;
+  if(t.dataset.bind){
+    const o=cur(); let v=t.value; if(t.dataset.num) v=Number(v);
+    setPath(o,t.dataset.bind,v);
+    if(t.dataset.bind==="text") o.textEdited=true;
+    touch("obs",o.id);
+    if(t.dataset.bind.startsWith("props.")){ const pi=document.getElementById("propInfo"); if(pi) pi.textContent=propInfo(o); }
+    if(t.dataset.bind==="meta.laa"||t.dataset.bind==="meta.datum"){ const sel=document.getElementById("curSel"); const op=[...sel.options].find(x=>x.value===o.id); if(op) op.textContent=obsLabel(o); }
+  }
+  if(t.dataset.wt){ const [ty,a]=t.dataset.wt.split("."); S.kb.weights[ty]=S.kb.weights[ty]||{}; S.kb.weights[ty][a]=Math.max(0,Number(t.value)||0); touch("kb"); renderScale(); }
+  if(t.dataset.action==="fine"){ const o=cur(); o.ratings[t.dataset.id]=Number(t.value); touch("obs",o.id);
+    const pe=t.closest(".ind").querySelector(".ind-pts"); pe.textContent=t.value+" P"; renderScale(); refreshSide(); }
+});
+document.addEventListener("change",e=>{
+  const t=e.target;
+  if(t.dataset.bind==="variant"||t.dataset.bind==="meta.feld"){ render(); }
+  if(t.id==="iProf"){ document.getElementById("iArea").innerHTML=areaOptions(t.value); }
+  if(t.dataset.action==="fine"){ _scroll=window.scrollY; render(); keepScroll(); }
+});
+let _scroll=0; function keepScroll(){ window.scrollTo(0,_scroll); }
+function refreshSide(){ /* leichte Aktualisierung des Vorschlags ohne Neuaufbau */
+  const o=cur(); if(!o.textEdited){ o.text=buildText(o); const ta=document.getElementById("textOut"); if(ta) ta.value=o.text; }
+}
+document.addEventListener("mouseover",e=>{
+  const b=e.target.closest(".seg button[data-desc]"); if(!b) return;
+  const d=document.getElementById("desc-"+b.dataset.id); if(d){ d.dataset.prev=d.dataset.prev??d.innerHTML; d.innerHTML="Stufe "+b.dataset.g+": „"+esc(b.dataset.desc)+"“"; d.classList.add("on"); }
+});
+document.addEventListener("mouseout",e=>{
+  const b=e.target.closest(".seg button[data-desc]"); if(!b) return;
+  const d=document.getElementById("desc-"+b.dataset.id); if(d&&d.dataset.prev!=null){ d.innerHTML=d.dataset.prev; delete d.dataset.prev; if(cur().ratings[b.dataset.id]==null) d.classList.remove("on"); }
+});
+document.addEventListener("keydown",e=>{ if(e.key==="Enter"&&e.target.id==="noteIn"){ e.preventDefault(); addLog(); } });
+
+function addLog(text){
+  const o=cur(); const inp=document.getElementById("noteIn");
+  const t=(text??(inp?inp.value:"")).trim(); if(!t && !S.tag) return;
+  o.log.push({id:uid(), t:Date.now(), phase:o.phase, tag:S.tag, v:S.val, text:t||S.tag});
+  touch("obs",o.id); S.tag=null; S.val="o";
+  render(); const ni=document.getElementById("noteIn"); if(ni) ni.focus();
+}
+
+document.addEventListener("click",async e=>{
+  const b=e.target.closest("[data-action]"); if(!b) return;
+  const a=b.dataset.action; const o=cur();
+  if(a==="fine") return;
+  _scroll=window.scrollY;
+  switch(a){
+    case "tab": S.tab=b.dataset.tab; render(); window.scrollTo(0,0); return;
+    case "newObs": { const n=newObs(b.dataset.type); const c=cur(); if(c){ ["pv","fl","vds","fbl","fach","laa"].forEach(k=>n.meta[k]=c.meta[k]); }
+      S.obs[n.id]=n; S.cur=n.id; touch("obs",n.id); S.tab="beobachtung"; render(); toast(b.dataset.type==="praktisch"?"Neue Lehrprobe angelegt":"Neue mündliche Prüfung angelegt"); return; }
+    case "phase": { const same=o.phase===b.dataset.ph; o.phase=same?null:b.dataset.ph; o.phaseAt=same?null:Date.now(); touch("obs",o.id); render(); keepScroll(); return; }
+    case "tag": S.tag=S.tag===b.dataset.tag?null:b.dataset.tag; document.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",c.dataset.tag===S.tag)); document.getElementById("noteIn")?.focus(); return;
+    case "val": S.val=b.dataset.v; document.querySelectorAll(".val button").forEach(c=>c.setAttribute("aria-pressed",c.dataset.v===S.val)); return;
+    case "addLog": addLog(); keepScroll(); return;
+    case "delLog": o.log=o.log.filter(x=>x.id!==b.dataset.id); touch("obs",o.id); render(); keepScroll(); return;
+    case "logQ": o.log.push({id:uid(),t:Date.now(),phase:o.phase,tag:null,v:"o",text:"Frage: "+b.dataset.q}); touch("obs",o.id); toast("Frage notiert"); return;
+    case "tri": { const g=b.dataset.g; o[g]=o[g]||{}; o[g][b.dataset.k]=o[g][b.dataset.k]===b.dataset.v?null:b.dataset.v; touch("obs",o.id);
+      b.parentElement.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",o[g][b.dataset.k]===x.dataset.v)); renderScale(); return; }
+    case "stufe": { o.theories=o.theories||{}; const n=b.dataset.th, key=thKey(n), s=Number(b.dataset.s); if(o.theories[key]===s) delete o.theories[key]; else o.theories[key]=s;
+      const st=STUFEN[s-1]; if(o.theories[key]) o.log.push({id:uid(),t:Date.now(),phase:o.phase,tag:"Theoriebezug",v:"o",text:n+" – Stufe "+s+" ("+st+")"});
+      touch("obs",o.id); render(); keepScroll(); return; }
+    case "rate": { const g=Number(b.dataset.g); if(g===0) delete o.ratings[b.dataset.id]; else o.ratings[b.dataset.id]=GRADES[g-1].def; touch("obs",o.id); render(); keepScroll(); return; }
+    case "takeProposal": { const r=compute(o); o.props.pv=r.pts; touch("obs",o.id); render(); keepScroll(); return; }
+    case "regen": o.textEdited=false; o.text=buildText(o); touch("obs",o.id); render(); keepScroll(); return;
+    case "copyText": copy(o.text); return;
+    case "exportObs": exportObs(o); return;
+    case "aiText": aiText(b); return;
+    case "abl": S.abl=b.dataset.k; render(); return;
+    case "ablDone": { o.ablaufDone=o.ablaufDone||{}; o.ablaufDone[b.dataset.k]=o.ablaufDone[b.dataset.k]||{}; o.ablaufDone[b.dataset.k][b.dataset.i]=b.checked; touch("obs",o.id);
+      const li=b.closest(".steps li"); if(li) li.classList.toggle("done",b.checked); return; }
+    case "open": S.cur=b.dataset.id; S.tab="beobachtung"; lsSet(); render(); return;
+    case "dup": { const src=S.obs[b.dataset.id]; const n=newObs(src.type); n.variant=src.variant; ["pv","fl","vds","fbl","fach","feld"].forEach(k=>n.meta[k]=src.meta[k]); S.obs[n.id]=n; S.cur=n.id; touch("obs",n.id); S.tab="beobachtung"; render(); toast("Neue Beobachtung mit gleichem Ausschuss angelegt"); return; }
+    case "delObs": if(confirm("Diese Beobachtung endgültig löschen? Das lässt sich nicht rückgängig machen.")){ delete S.obs[b.dataset.id]; dirty.obs.delete(b.dataset.id); dirty.delObs.add(b.dataset.id); if(S.cur===b.dataset.id) S.cur=Object.keys(S.obs)[0]||null; touch("kb"); render(); toast("Beobachtung gelöscht"); } return;
+    case "addDoc": { const title=document.getElementById("docTitle").value.trim()||"Unbenanntes Dokument"; const text=document.getElementById("docText").value.trim(); if(!text){ toast("Bitte Text einfügen oder eine Datei laden"); return; } addDoc(title,text); return; }
+    case "pickFile": document.getElementById("fileIn").click(); return;
+    case "viewDoc": { const d=S.docs[b.dataset.id]; const v=document.getElementById("docView"); v.innerHTML=`<h3 style="margin-top:12px">${esc(d.title)}</h3><div class="out">${esc(d.text.slice(0,20000))}${d.text.length>20000?"\n…":""}</div>`; return; }
+    case "docUse": S.docs[b.dataset.id].use=b.checked; touch("doc",b.dataset.id); return;
+    case "delDoc": if(confirm("Dokument aus der Wissensbasis löschen?")){ delete S.docs[b.dataset.id]; dirty.docs.delete(b.dataset.id); dirty.delDocs.add(b.dataset.id); touch("kb"); render(); } return;
+    case "aiExtract": aiExtract(b.dataset.id,b); return;
+    case "takeExtract": takeExtract(); return;
+    case "aiAsk": aiAsk(b); return;
+    case "addQ": { const t=document.getElementById("qText").value.trim(); if(!t) return; S.kb.questions.push({id:uid(),mode:document.getElementById("qMode").value,text:t}); touch("kb"); render(); toast("Frage hinzugefügt"); return; }
+    case "delQ": S.kb.questions=S.kb.questions.filter(q=>q.id!==b.dataset.id); touch("kb"); render(); return;
+    case "addT": { const n=document.getElementById("tName").value.trim(); if(!n) return; S.kb.theories.push({id:uid(),feld:Number(document.getElementById("tFeld").value),name:n,kern:document.getElementById("tKern").value.trim()}); touch("kb"); render(); toast("Theorie hinzugefügt"); return; }
+    case "delT": S.kb.theories=S.kb.theories.filter(q=>q.id!==b.dataset.id); touch("kb"); render(); return;
+    case "addI": { const name=document.getElementById("iName").value.trim(); const lv=[...document.querySelectorAll(".iLv")].map(x=>x.value.trim());
+      if(!name||lv.some(x=>!x)){ toast("Bitte Namen und alle sechs Stufen ausfüllen"); return; }
+      S.kb.indicators.push({id:"X"+uid(),profile:document.getElementById("iProf").value,area:document.getElementById("iArea").value,name,subj:document.getElementById("iSubj").value.trim()||name,levels:lv}); touch("kb"); render(); toast("Indikator hinzugefügt"); return; }
+    case "delI": S.kb.indicators=S.kb.indicators.filter(q=>q.id!==b.dataset.id); touch("kb"); render(); return;
+    case "resetW": S.kb.weights=JSON.parse(JSON.stringify(DEFAULT_WEIGHTS)); touch("kb"); render(); return;
+    case "exportAll": exportAll(); return;
+    case "importAll": document.getElementById("importIn").click(); return;
+  }
+});
+
+/* ---------- Dokumente laden ---------- */
+function addDoc(title,text){
+  let t=text; if(t.length>200000){ t=t.slice(0,200000); toast("Dokument auf 200.000 Zeichen gekürzt"); }
+  const id=uid(); S.docs[id]={id,title,text:t,added:Date.now(),use:true}; touch("doc",id); render();
+  toast("Dokument gespeichert");
+}
+let pdfjsP=null;
+function loadPdfJs(){
+  if(pdfjsP) return pdfjsP;
+  pdfjsP=new Promise((res,rej)=>{ const s=document.createElement("script"); s.src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+    s.onload=()=>{ try{ window.pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"; res(window.pdfjsLib);}catch(e){rej(e);} };
+    s.onerror=()=>rej(new Error("PDF-Bibliothek nicht ladbar")); document.head.appendChild(s); });
+  return pdfjsP;
+}
+document.getElementById("fileIn").addEventListener("change",async e=>{
+  const f=e.target.files[0]; e.target.value=""; if(!f) return;
+  const st=document.getElementById("fileState"); if(st) st.textContent="Lese "+f.name+" …";
+  try{
+    let text="";
+    if(/\.pdf$/i.test(f.name)){
+      const lib=await loadPdfJs(); const pdf=await lib.getDocument({data:await f.arrayBuffer()}).promise;
+      for(let p=1;p<=pdf.numPages;p++){ const pg=await pdf.getPage(p); const c=await pg.getTextContent(); text+=c.items.map(i=>i.str+(i.hasEOL?"\n":" ")).join("")+"\n\n"; }
+    } else text=await f.text();
+    if(!text.trim()) throw new Error("Kein Text gefunden");
+    addDoc(f.name.replace(/\.[^.]+$/,""), text.trim());
+  }catch(err){ if(st) st.textContent="Datei konnte nicht gelesen werden ("+err.message+"). Text bitte kopieren und einfügen."; }
+});
+document.getElementById("importIn").addEventListener("change",async e=>{
+  const f=e.target.files[0]; e.target.value=""; if(!f) return;
+  try{
+    const d=JSON.parse(await f.text());
+    if(d.kb){ const k=d.kb; ["questions","theories","indicators"].forEach(key=>{ (k[key]||[]).forEach(x=>{ if(!S.kb[key].find(y=>y.id===x.id)) S.kb[key].push(x); }); }); if(k.weights) S.kb.weights=k.weights; touch("kb"); }
+    Object.values(d.obs||{}).forEach(o=>{ S.obs[o.id]=o; touch("obs",o.id); });
+    Object.values(d.docs||{}).forEach(x=>{ S.docs[x.id]=x; touch("doc",x.id); });
+    render(); toast("Import abgeschlossen");
+  }catch(err){ toast("Import fehlgeschlagen: keine gültige Exportdatei"); }
+});
+
+/* ---------- Export ---------- */
+async function saveFile(name,data){
+  if(S.downloads){ try{ await S.downloads.save({filename:name,data}); toast("Datei gespeichert"); return; }catch(e){ if(e&&e.code==="declined") return; } }
+  try{
+    const type=/\.json$/.test(name)?"application/json":"text/markdown";
+    const url=URL.createObjectURL(new Blob([data],{type:type+";charset=utf-8"}));
+    const a=document.createElement("a"); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),2000); toast("Datei gespeichert");
+  }catch(e){ copy(data); toast("Speichern nicht möglich – Inhalt in die Zwischenablage kopiert"); }
+}
+function copy(t){ if(navigator.clipboard) navigator.clipboard.writeText(t).then(()=>toast("Kopiert"),()=>fallbackCopy(t)); else fallbackCopy(t); }
+function fallbackCopy(t){ const ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand("copy"); toast("Kopiert");}catch(e){} ta.remove(); }
+function exportObs(o){
+  const r=compute(o);
+  const L=["# "+obsLabel(o),"",o.text,"","## Beobachtungsprotokoll"];
+  o.log.forEach(e=>L.push("- "+fmtTime(e.t)+" ["+phaseName(o,e.phase)+(e.tag?" / "+e.tag:"")+"] "+(e.v==="+"?"(+) ":e.v==="-"?"(–) ":"")+e.text));
+  if(o.type==="praktisch"){
+    L.push("","## Entwurf"); ENTWURF_CHECKS.forEach(([k,t])=>o.entwurf[k]&&L.push("- "+t+": "+o.entwurf[k])); if(o.entwurfNotiz) L.push("", o.entwurfNotiz);
+    L.push("","## Reflexion"); REFLEXION_CHECKS.forEach(([k,t])=>o.reflexion[k]&&L.push("- "+t+": "+o.reflexion[k]));
+  } else { L.push("","## Theoriebezüge"); Object.entries(o.theories||{}).forEach(([n,s])=>L.push("- "+n+": Stufe "+s+" ("+STUFEN[s-1]+")")); }
+  L.push("","## Notenvorschläge","- Fachleiter/in: "+(o.props.fl||"–"),"- Schule/VfA: "+(o.props.vds||"–"),"- Vorsitz: "+(o.props.pv||"–"),"- Festgesetzt: "+(o.props.final||"–"),"- Rechnerischer Vorschlag: "+(r.pts??"–"));
+  if(o.notes) L.push("","## Notizen",o.notes);
+  saveFile(("Niederschrift_"+(o.meta.laa||"LAA")+"_"+o.meta.datum).replace(/[^\wäöüÄÖÜß.-]+/g,"_")+".md", L.join("\n"));
+}
+function exportAll(){ saveFile("Pruefungsbegleiter_Export_"+today()+".json", JSON.stringify({version:1,kb:S.kb,obs:S.obs,docs:S.docs},null,2)); }
+
+/* ---------- Claude ---------- */
+function aiErr(e){ const c=e&&e.code; return c==="not_granted"?"Claude wurde für diese Seite nicht freigegeben.":c==="rate_limited"?"Gerade zu viele Anfragen – bitte kurz warten.":"Claude ist gerade nicht erreichbar."; }
+function kbContext(limit){
+  let s=""; Object.values(S.docs).filter(d=>d.use).forEach(d=>{ if(s.length<limit) s+="\n### "+d.title+"\n"+d.text.slice(0,limit-s.length); });
+  return s;
+}
+async function aiText(btn){
+  const o=cur(); const r=compute(o); if(r.pts==null){ toast("Zuerst Indikatoren einstufen"); return; }
+  const g=gradeOf(r.pts); const st=document.getElementById("aiState"); btn.disabled=true; st.textContent="Claude formuliert …";
+  const logTxt=o.log.map(e=>"- ["+phaseName(o,e.phase)+(e.tag?"/"+e.tag:"")+"] "+(e.v==="+"?"(+) ":e.v==="-"?"(–) ":"")+e.text).join("\n");
+  const extra = o.type==="praktisch"
+    ? "Entwurfsprüfung: "+ENTWURF_CHECKS.filter(([k])=>o.entwurf[k]).map(([k,t])=>t+": "+o.entwurf[k]).join("; ")+"\nEntwurf +/-: "+(o.entwurfNotiz||"")+"\nReflexion: "+REFLEXION_CHECKS.filter(([k])=>o.reflexion[k]).map(([k,t])=>t+": "+o.reflexion[k]).join("; ")
+    : "Theoriebezüge: "+Object.entries(o.theories||{}).map(([n,s])=>n+" (Stufe "+STUFEN[s-1]+")").join("; ");
+  const prompt=`Du unterstützt einen Prüfungsvorsitz im Thüringer Vorbereitungsdienst. Formuliere eine sachliche, niederschrifttaugliche Begründung auf Deutsch (ca. 180–280 Wörter) für die folgende ${o.type==="praktisch"?(o.variant==="blp"?"benotete Lehrprobe":"praktische Staatsprüfung"):"mündliche Staatsprüfung"}.
+Regeln:
+- Die Note steht fest: ${r.pts} Punkte, „${g.name}“. Verändere sie nicht und schlage keine andere vor.
+- Gliedere nach den Bereichen ${r.prof.areas.map(a=>a.name).join(", ")}, jeweils als kurzer Fließtextabsatz.
+- Nutze die Formulierungen des standardisierten Leistungsbilds und wertende Adjektive passend zur jeweiligen Teilstufe. Adjektive je Stufe: 1: ${ADJ[1]} | 2: ${ADJ[2]} | 3: ${ADJ[3]} | 4: ${ADJ[4]} | 5: ${ADJ[5]} | 6: ${ADJ[6]}.
+- Stütze dich nur auf die Einstufungen und Beobachtungsnotizen unten; erfinde keine Beobachtungen. Konkrete Notizen als Belege einbauen.
+- Bewertet wird nur die gezeigte Prüfungsleistung. Kein Beratungston, keine Anrede, keine Überschriften mit Markdown-Zeichen.
+- Schließe mit einem Satz, der die maßgeblichen Gründe für die Note zusammenfasst.
+
+Einstufungen (aus dem Leistungsbild):
+${r.all.map(x=>"- ["+x.area.name+"] "+x.item.name+": "+x.p+" P – "+sentence(x.item,x.p)).join("\n")}
+
+Beobachtungsnotizen:
+${logTxt||"(keine)"}
+${extra}
+Freie Notizen: ${o.notes||"(keine)"}
+${kbContext(12000)?"\nZusätzliche Hinweise aus den Unterlagen des Vorsitzes (nur zur Orientierung):"+kbContext(12000):""}`;
+  try{
+    const ta=document.getElementById("textOut");
+    const res=await S.sample(prompt,{modelTier:"default",onText:({text})=>{ if(ta) ta.value=text; }});
+    o.text=res.text; o.textEdited=true; touch("obs",o.id); st.textContent="Von Claude ausformuliert – bitte prüfen und bei Bedarf anpassen.";
+  }catch(e){ st.textContent=aiErr(e); if(e&&e.text){ o.text=e.text; o.textEdited=true; touch("obs",o.id);} }
+  btn.disabled=false;
+}
+let lastExtract=null;
+async function aiExtract(id,btn){
+  const d=S.docs[id]; const out=document.getElementById("extractOut"); btn.disabled=true;
+  out.innerHTML=`<p class="muted small">Claude wertet „${esc(d.title)}“ aus …</p>`;
+  const prompt=`Werte das folgende Dokument für ein Werkzeug zur Abnahme von Lehrproben und Staatsprüfungen (Thüringer Vorbereitungsdienst) aus. Extrahiere nur, was tatsächlich im Dokument steht.
+Antworte ausschließlich mit JSON in dieser Form:
+{"fragen":[{"modus":"stex"|"blp"|"muendlich","text":"…"}],
+ "theorien":[{"feld":1-11,"name":"…","kern":"…"}],
+ "kriterien":[{"profil":"praktisch"|"muendlich","bereich":"${PROFILES.praktisch.areas.map(a=>a.id).join("|")}|${PROFILES.muendlich.areas.map(a=>a.id).join("|")}","name":"…","satzanfang":"…","stufen":["Stufe 1 sehr gut","2","3","4","5","6 ungenügend"]}],
+ "hinweise":["kurze, für den Vorsitz relevante Verfahrenshinweise"]}
+Handlungsfelder: ${FELDER.map(f=>f.n+"="+f.name).join(", ")}. Kriterien nur aufnehmen, wenn sechs Stufen ableitbar sind. Höchstens je 12 Einträge.
+
+Dokument „${d.title}“:
+${d.text.slice(0,40000)}`;
+  try{
+    const j=await S.sample.json(prompt,{modelTier:"default"});
+    lastExtract={fragen:j.fragen||[],theorien:j.theorien||[],kriterien:(j.kriterien||[]).filter(k=>Array.isArray(k.stufen)&&k.stufen.length===6),hinweise:j.hinweise||[]};
+    const L=lastExtract; let i=0;
+    const box=(kind,idx,label)=>`<li><label><input type="checkbox" checked data-ex="${kind}:${idx}"><span>${label}</span></label></li>`;
+    out.innerHTML=`<h3 style="margin-top:14px">Vorschläge aus „${esc(d.title)}“</h3>
+      ${L.hinweise.length?`<div class="note info">${L.hinweise.map(esc).join("<br>")}</div>`:""}
+      <ul class="checks">${L.fragen.map((q,k)=>box("f",k,esc(q.text)+` <span class="tag">${esc(q.modus)}</span>`)).join("")}
+      ${L.theorien.map((t,k)=>box("t",k,"<b>"+esc(t.name)+"</b> – "+esc(t.kern)+` <span class="tag">Feld ${esc(t.feld)}</span>`)).join("")}
+      ${L.kriterien.map((c,k)=>box("k",k,"Indikator: <b>"+esc(c.name)+"</b>"+` <span class="tag">${esc(c.profil)} / ${esc(c.bereich)}</span>`)).join("")}</ul>
+      ${(L.fragen.length+L.theorien.length+L.kriterien.length)?`<div class="row" style="margin-top:8px"><button class="btn primary" data-action="takeExtract">Ausgewählte übernehmen</button></div>`:`<p class="muted small">Keine übertragbaren Fragen, Theorien oder Kriterien gefunden.</p>`}`;
+  }catch(e){ out.innerHTML=`<p class="small" style="color:var(--bad)">${aiErr(e)}</p>`; }
+  btn.disabled=false;
+}
+function takeExtract(){
+  if(!lastExtract) return; let n=0;
+  document.querySelectorAll("[data-ex]").forEach(c=>{ if(!c.checked) return; const [k,i]=c.dataset.ex.split(":"); const L=lastExtract;
+    if(k==="f"){ const q=L.fragen[i]; S.kb.questions.push({id:uid(),mode:["stex","blp","muendlich"].includes(q.modus)?q.modus:"stex",text:q.text}); n++; }
+    if(k==="t"){ const t=L.theorien[i]; S.kb.theories.push({id:uid(),feld:Math.min(11,Math.max(1,Number(t.feld)||1)),name:t.name,kern:t.kern||""}); n++; }
+    if(k==="k"){ const x=L.kriterien[i]; const prof=x.profil==="muendlich"?"muendlich":"praktisch"; const area=PROFILES[prof].areas.find(a=>a.id===x.bereich)?x.bereich:PROFILES[prof].areas[0].id;
+      S.kb.indicators.push({id:"X"+uid(),profile:prof,area,name:x.name,subj:x.satzanfang||x.name,levels:x.stufen.map(String)}); n++; }
+  });
+  touch("kb"); lastExtract=null; render(); toast(n+" Einträge übernommen");
+}
+async function aiAsk(btn){
+  const q=document.getElementById("askIn").value.trim(); if(!q) return; const out=document.getElementById("askOut");
+  out.style.display="block"; out.textContent="Claude denkt nach …"; btn.disabled=true;
+  const base=`Grundlagen (Kurzfassung): ${ABLAUF.stex.title}: ${ABLAUF.stex.pre.concat(ABLAUF.stex.steps).join("; ")}. ${ABLAUF.blp.title}: ${ABLAUF.blp.pre.concat(ABLAUF.blp.steps).join("; ")}. ${ABLAUF.muendlich.title}: ${ABLAUF.muendlich.pre.concat(ABLAUF.muendlich.steps).join("; ")}. Entwurf: ${ENTWURF_CHECKS.map(c=>c[1]).join("; ")}. Notenvorschläge: Fachleiter, dann Schule/VfA (eine Stimme), dann Vorsitz; fbL in STEX nur beratend. Krankmeldung: STEX 10, BLP 5 Arbeitstage vorher nicht dienstunfähig. Wenn der Entwurf deutliche Mängel aufweist, sind sehr gute Noten ausgeschlossen und gute nur im absoluten Ausnahmefall.`;
+  const prompt=`Beantworte die Frage eines Prüfungsvorsitzes knapp und sachlich auf Deutsch, nur auf Grundlage der Unterlagen unten. Wenn die Unterlagen keine Antwort enthalten, sage das deutlich und rate nicht. Nenne, aus welcher Unterlage die Antwort stammt.
+
+${base}
+${kbContext(30000)}
+
+Frage: ${q}`;
+  try{ await S.sample(prompt,{modelTier:"default",onText:({text})=>{ out.textContent=text; }}); }
+  catch(e){ out.textContent=aiErr(e); }
+  btn.disabled=false;
+}
+
+/* ============================================================
+   START
+   ============================================================ */
+(function boot(){
+  const d=lsGet();
+  if(d){ S.kb=Object.assign(defaultKB(), d.kb||{}); S.obs=d.obs||{}; S.docs=d.docs||{}; S.cur=d.cur; S.store="lokal im Browser"; }
+  else S.store="lokal im Browser";
+  ensureCur(); render(); initCaps();
+})();
+</script>
+</body>
+</html>
